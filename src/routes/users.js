@@ -8,7 +8,8 @@ export const routerUsers = express.Router();
  * skilar síðu af notendum, aðeins ef notandi sem framkvæmir er stjórnandi
  */
 routerUsers.get('/users', (req, res) => {
-
+    const data = users.getUsers();
+    res.json(data);
 });
 
 /**
@@ -16,7 +17,9 @@ routerUsers.get('/users', (req, res) => {
  * skilar notanda, aðeins ef notandi sem framkvæmir er stjórnandi
  */
 routerUsers.get('/users/:data?', (req, res) => {
-    
+  const id = req.params.data;
+  const data = users.getUserByID(id);
+  return res.json(data);
 });
 
 /**
@@ -25,7 +28,16 @@ routerUsers.get('/users/:data?', (req, res) => {
  */
 
 routerUsers.patch('/users/:data?', (req, res) => {
-  
+  const id = req.params.data;
+  let bool = true;
+  // updates users role
+  if(req.user.boolean === false) {
+    bool = false;
+  }
+  await users.updateUserByID(id, bool);
+  // gets the user by id
+  const data = await users.getUserByID(id);
+  return res.json(data);
 });
 
 /**
@@ -33,7 +45,9 @@ routerUsers.patch('/users/:data?', (req, res) => {
  * staðfestir og býr til notanda. Skilar auðkenni og netfangi. Notandi sem búinn er til skal aldrei vera
  */
 routerUsers.get('/users/register', (req, res) => {
-  
+  // not complete
+  await users.makeUser("data")
+  return res.json(req.user)
 });
 
 /**
@@ -41,7 +55,7 @@ routerUsers.get('/users/register', (req, res) => {
  * með netfangi og lykilorði skilar token ef gögn rétt
  */
 routerUsers.post('/users/login', (req, res) => {
-  
+  // ræna frá fyrrum verkefnum.
 });
 
 /**
@@ -49,11 +63,14 @@ routerUsers.post('/users/login', (req, res) => {
  * skilar upplýsingum um notanda sem á token, auðkenni og netfangi, aðeins ef notandi innskráður
  */
 routerUsers.get('/users/me', (req, res) => {
-  
+  return res.json(req.user)
 });
 /**
  * uppfærir netfang, lykilorð eða bæði ef gögn rétt, aðeins ef notandi innskráður
  */
 routerUsers.patch('/users/me', (req, res) => {
-  
+  const {
+    email,
+    password,
+  } = req.user
 });
