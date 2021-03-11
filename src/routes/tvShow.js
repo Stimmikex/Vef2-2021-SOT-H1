@@ -1,6 +1,6 @@
 import express from 'express';
 
-export let routerTV = express.Router();
+export const routerTV = express.Router();
 
 /**
  * /tv

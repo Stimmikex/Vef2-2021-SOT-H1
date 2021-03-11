@@ -8,7 +8,7 @@ CREATE TABLE tv_shows {
 	des character varying(255),
 	leng character varying(255),
 	network character varying(255),
-	url character varying(255) NOT NULL
+	url character varying(255)
 }
 
 CREATE TABLE category {
@@ -29,14 +29,18 @@ CREATE TABLE seasons {
 	name character varying(255),
 	aired DATE,
 	description TEXT,
-	poster character varying(255)
+	poster character varying(255),
+	tv_show_id INTEGER,
+	FOREIGN KEY (tv_show_id) REFERENCES Shows(id)
 }
 
 CREATE TABLE shows {
 	id serial primary key,
 	number INTEGER,
 	aired DATE,
-	description TEXT	
+	description TEXT,
+	season_id INTEGER,
+	FOREIGN KEY (season_id) REFERENCES seasons(id)
 }
 
 CREATE TABLE users {
