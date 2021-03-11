@@ -1,12 +1,29 @@
 import { query } from './utils.js';
 
-export async function getUsers() {
-  const q = 'SELECT * FROM users';
-  let result = '';
-  try {
-    result = await query(q);
-  } catch (e) {
-    console.info('Error occured :>> ', e);
-  }
-  return result;
+export async function addRating() {
+
+}
+
+export async function updateRating() {
+
+}
+
+export async function deleteRating() {
+
+}
+
+export async function addState() {
+
+}
+
+export async function changeState() {
+
+}
+
+export async function deleteState() {
+
+}
+
+export async function getStateAndRating() {
+  
 }

@@ -1,4 +1,5 @@
 import express from 'express';
+import users from '../dataOut/users.js'
 
 export const routerUsers = express.Router();
 
@@ -7,7 +8,7 @@ export const routerUsers = express.Router();
  * skilar síðu af notendum, aðeins ef notandi sem framkvæmir er stjórnandi
  */
 routerUsers.get('/users', (req, res) => {
-  
+
 });
 
 /**
@@ -15,7 +16,7 @@ routerUsers.get('/users', (req, res) => {
  * skilar notanda, aðeins ef notandi sem framkvæmir er stjórnandi
  */
 routerUsers.get('/users/:data?', (req, res) => {
-  
+    
 });
 
 /**
