@@ -1,15 +1,12 @@
-/*
-Keyrt með:
-node 04.passport.js
-Keyrir upp express vefjón sem notar passport fyrir notendaumsjón.
-Í users.js eru hjálparföll fyrir notendaumsjón
-*/
 import express from 'express';
 import passport from 'passport';
 import session from 'express-session';
 import { Strategy } from 'passport-local';
 
 import { comparePasswords, findByUsername, findById } from './users.js';
+import { routerUsers } from './routes/users.js';
+import { routerTV } from './routes/tvShow.js';
+import { routerUserXtv } from './routes/usersXtv.js';
 
 const app = express();
 
@@ -101,6 +98,10 @@ function ensureLoggedIn(req, res, next) {
   return res.redirect('/login');
 }
 
+app.use(routerUsers);
+app.use(routerTV);
+app.use(routerUserXtv);
+
 app.get('/', (req, res) => {
   if (req.isAuthenticated()) {
     // req.user kemur beint úr users.js
@@ -114,62 +115,6 @@ app.get('/', (req, res) => {
 
   return res.send(`
     <p><a href="/login">Innskráning</a></p>
-  `);
-});
-
-app.get('/login', (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.redirect('/');
-  }
-
-  let message = '';
-
-  // Athugum hvort einhver skilaboð séu til í session, ef svo er birtum þau
-  // og hreinsum skilaboð
-  if (req.session.messages && req.session.messages.length > 0) {
-    message = req.session.messages.join(', ');
-    req.session.messages = [];
-  }
-
-  // Ef við breytum name á öðrum hvorum reitnum að neðan mun ekkert virka
-  // nema við höfum stillt í samræmi, sjá línu 64
-  return res.send(`
-    <form method="post" action="/login" autocomplete="off">
-      <label>Notendanafn: <input type="text" name="username"></label>
-      <label>Lykilorð: <input type="password" name="password"></label>
-      <button>Innskrá</button>
-    </form>
-    <p>${message}</p>
-  `);
-});
-
-app.post(
-  '/login',
-
-  // Þetta notar strat að ofan til að skrá notanda inn
-  passport.authenticate('local', {
-    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
-    failureRedirect: '/login',
-  }),
-
-  // Ef við komumst hingað var notandi skráður inn, senda á /admin
-  (req, res) => {
-    res.redirect('/admin');
-  },
-);
-
-app.get('/logout', (req, res) => {
-  // logout hendir session cookie og session
-  req.logout();
-  res.redirect('/');
-});
-
-// ensureLoggedIn middleware passar upp á að aðeins innskráðir notendur geti
-// skoðað efnið, aðrir lenda í redirect á /login, stillt í línu 103
-app.get('/admin', ensureLoggedIn, (req, res) => {
-  res.send(`
-    <p>Hér eru leyndarmál</p>
-    <p><a href="/">Forsíða</a></p>
   `);
 });
 

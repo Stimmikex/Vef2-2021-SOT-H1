@@ -22,6 +22,17 @@ export async function getUserByID(id) {
   return result.rows;
 }
 
+export async function getUserByName(name) {
+  const q = 'SELECT * FROM users WHERE username = $1';
+  let result = '';
+  try {
+    result = await query(q, name);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows;
+}
+
 export async function updateUserByID(id, bool) {
   const q = `
     UPDATE users
