@@ -1,8 +1,20 @@
 import csv from 'csv-parser';
 import fs from 'fs';
-import { query } from '../dataOut/utils.js';
+import { makeSeries } from '../dataOut/tvShows.js';
 
-async function insertSeries() {
+function insertSeries() {
+    fs.createReadStream('../../data/series.csv')
+    .pipe(csv())
+    .on('data', async (row) => {
+        console.log(row);
+        await makeSeries(row);
+    })
+    .on('end', () => {
+        console.log('CSV file successfully processed');
+    });
+}
+
+function insertSeasons() {
     fs.createReadStream('../../data/series.csv')
     .pipe(csv())
     .on('data', (row) => {
@@ -11,11 +23,10 @@ async function insertSeries() {
             INSERT INTO
             series (name, airDate, words, tagline, image, description, language, network, homepage)
             VALUES ($1, $2, $3, $4)
-            WHERE id = $5
         `;
-        let result = '';
         try {
-            result = query(q, [row.name, row.airDate, row.genres, row.inProduction, row.tagline, row.description, row.language, row.network, row.homepage])
+            query(q, [row.name, row.airDate, row.inProduction, row.tagline, row.image, row.description, row.language, row.network, row.homepage]);
+            console.log("date logged");
         } catch (e) {
             console.info('Error occured :>> ', e);
         }
@@ -23,6 +34,28 @@ async function insertSeries() {
     .on('end', () => {
         console.log('CSV file successfully processed');
     });
-} 
+}
+
+function insertEpisodes() {
+    fs.createReadStream('../../data/series.csv')
+    .pipe(csv())
+    .on('data', (row) => {
+        console.log(row);
+        const q = `
+            INSERT INTO
+            series (name, airDate, words, tagline, image, description, language, network, homepage)
+            VALUES ($1, $2, $3, $4)
+        `;
+        try {
+            query(q, [row.name, row.airDate, row.genres, row.inProduction, row.tagline, row.description, row.language, row.network, row.homepage]);
+            console.log("date logged");
+        } catch (e) {
+            console.info('Error occured :>> ', e);
+        }
+    })
+    .on('end', () => {
+        console.log('CSV file successfully processed');
+    });
+}
 
 insertSeries();

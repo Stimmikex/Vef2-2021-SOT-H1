@@ -19,15 +19,15 @@ export async function getShows() {
  * makeshow(data)
  * @param {JSON.Object} data
  */
-export async function makeShow(data) {
+export async function makeSeries(data) {
   const q = `
     INSERT INTO
-      tv_shows (name, aired, works, tagline, poster, des, leng, network, url)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    RETURNING *
+    series (name, airDate, works, tagline, image, description, language, network, homepage)
+    VALUES ($1, $2, $3, $4)
   `;
   try {
-    await query(q, [data.name, data.aired, data.works, data.tagline, data.poster, data.des, data.leng, data.network, data.url]);
+    await query(q, [data.name, data.airDate, data.inProduction, data.tagline, data.image, data.description, data.language, data.network, data.homepage]);
+    console.log("date logged");
   } catch (e) {
     console.info('Error occured :>> ', e);
   }

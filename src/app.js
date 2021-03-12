@@ -7,6 +7,23 @@ import { comparePasswords, findByUsername, findById } from './users.js';
 import { routerUsers } from './routes/users.js';
 import { routerTV } from './routes/tvShow.js';
 import { routerUserXtv } from './routes/usersXtv.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const {
+  DATABASE_URL: connectionString,
+  NODE_ENV: nodeEnv = 'development',
+} = process.env;
+
+console.log(process.env);
+
+if (!connectionString) {
+  console.error('Vantar DATABASE_URL!');
+  process.exit(1);
+}
+
+const ssl = nodeEnv !== 'development' ? { rejectUnauthorized: false } : false;
 
 const app = express();
 
