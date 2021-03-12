@@ -1,21 +1,21 @@
 import { query } from './utils.js';
 
 export async function getUsers() {
-  const q = 'SELECT * FROM users';
+  const q = 'SELECT name, email, role FROM users';
   let result = '';
   try {
     result = await query(q);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
-  return result;
+  return result.rows;
 }
 
 export async function getUserByID(id) {
-  const q = 'SELECT * FROM users WHERE id = $1';
+  const q = 'SELECT name, email, role FROM users WHERE id = $1';
   let result = '';
   try {
-    result = await query(q, id);
+    result = await query(q, [id]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
@@ -23,10 +23,10 @@ export async function getUserByID(id) {
 }
 
 export async function getUserByName(name) {
-  const q = 'SELECT * FROM users WHERE username = $1';
+  const q = 'SELECT name, email, role FROM users WHERE username = $1';
   let result = '';
   try {
-    result = await query(q, name);
+    result = await query(q, [name]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
@@ -50,6 +50,7 @@ export async function updateUserByID(id, bool) {
 }
 
 export async function makeUser(data) {
+  const hashedPassword = await bcrypt.hash(data.password, 11);
   const q = `
     INSERT INTO
       user (name, email, password, role)
@@ -58,7 +59,7 @@ export async function makeUser(data) {
   `;
   let result = '';
   try {
-    result = await query(q, [data.name, data.email, data.password, data.role]);
+    result = await query(q, [data.name, data.email, hashedPassword, data.role]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }

@@ -14,7 +14,7 @@ export const routerUsers = express.Router();
  * skilar síðu af notendum, aðeins ef notandi sem framkvæmir er stjórnandi
  */
 routerUsers.get('/users', async (req, res) => {
-  const data = getUsers();
+  const data = await getUsers();
   res.json(data);
 });
 
@@ -24,7 +24,8 @@ routerUsers.get('/users', async (req, res) => {
  */
 routerUsers.get('/users/:data?', async (req, res) => {
   const id = req.params.data;
-  const data = getUserByID(id);
+  const data = await getUserByID(id);
+  console.log(data);
   return res.json(data);
 });
 
@@ -51,7 +52,7 @@ routerUsers.patch('/users/:data?', async (req, res) => {
  * staðfestir og býr til notanda. Skilar auðkenni og netfangi. 
  * Notandi sem búinn er til skal aldrei vera
  */
-routerUsers.get('/users/register', async (req, res) => {
+routerUsers.post('/users/register', async (req, res) => {
   // not complete
   await makeUser('data');
   return res.json(req.user);
@@ -63,6 +64,14 @@ routerUsers.get('/users/register', async (req, res) => {
  */
 routerUsers.post('/users/login', async (req, res) => {
   // ræna frá fyrrum verkefnum.
+  '/login',
+  passport.authenticate('local', {
+    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
+    failureRedirect: '/login',
+  }),
+  (req, res) => {
+    res.redirect('/admin');
+  },
 });
 
 /**
