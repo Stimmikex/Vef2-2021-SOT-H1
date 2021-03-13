@@ -4,8 +4,8 @@ import { query } from './utils.js';
  * getShows()
  * @returns shows from database
  */
-export async function getShows() {
-  const q = 'SELECT * FROM Shows';
+export async function getSeries() {
+  const q = 'SELECT * FROM series';
   let result = '';
   try {
     result = await query(q);
@@ -22,11 +22,29 @@ export async function getShows() {
 export async function makeSeries(data) {
   const q = `
     INSERT INTO
-    series (name, airDate, works, tagline, image, description, language, network, homepage)
+    series (
+      name,
+      airdate,
+      works, 
+      tagline, 
+      image, 
+      description, 
+      language, 
+      network, 
+      homepage)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   `;
   try {
-    await query(q, [data.name, data.airDate, data.inProduction, data.tagline, data.image, data.description, data.language, data.network, data.homepage]);
+    await query(q, [
+      data.name,
+      data.airDate,
+      data.inProduction,
+      data.tagline,
+      data.image,
+      data.description,
+      data.language,
+      data.network,
+      data.homepage]);
     console.log("date logged");
   } catch (e) {
     console.info('Error occured :>> ', e);
@@ -38,8 +56,8 @@ export async function makeSeries(data) {
  * @param {INTEGER} id
  * @returns json.Objects
  */
-export async function getShowByID(id) {
-  const q = 'SELECT * FROM shows WHERE id = $1';
+export async function getSeriesByID(id) {
+  const q = 'SELECT * FROM series WHERE id = $1';
   let result = '';
   try {
     result = await query(q, id);
@@ -103,15 +121,25 @@ export async function getSeasons() {
   return result.rows;
 }
 
-export async function makeSeasonByID(id, data) {
+export async function makeSeason(data) {
   const q = `
     INSERT INTO
-      seasons (name, aired, description, poster)
-    VALUES ($1, $2, $3, $4)
-    WHERE id = $5
+      seasons (name, number, airdate, overview, poster, series_id)
+    VALUES ($1, $2, $3, $4, $5, $6)
   `;
+  let date = data.airDate;
+  if (date === '') {
+    date = null;
+  }
   try {
-    await query(q, [data.name, data.aired, data.description, data.poster, id]);
+    await query(q, [
+      data.name,
+      data.number,
+      date,
+      data.overview,
+      data.poster,
+      data.serieId,
+    ]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
@@ -139,14 +167,30 @@ export async function deleteSeasonByID(id) {
   }
 }
 
-export async function makeEpisodeBySeasonID(id, data) {
+export async function getSeasonBySeriesId(id, season) {
+  const q = 'SELECT * FROM seasons WHERE series_id = $1 AND number = $2 ';
+  let result = '';
+  try {
+    result = await query(q, [id, season]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows;
+}
+
+export async function makeEpisode(data) {
   const q = `
     INSERT INTO
-      shows (number, aired, description, season_id)
-    VALUES ($1, $2, $3, $4)
+      episodes (name, number, airdate, overview, season_id)
+    VALUES ($1, $2, $3, $4, $5)
   `;
+  let date = data.airDate;
+  if (date === '') {
+    date = null;
+  }
   try {
-    await query(q, [data, id]);
+    const dataman = await getSeasonBySeriesId(data.season, data.serieId);
+    await query(q, [data.name, data.number, date, data.overview, dataman[0].id]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }

@@ -1,23 +1,33 @@
 import express from 'express';
-
+import {
+  getSeries,
+  getSeriesByID,
+  getSeasonByID,
+  getGenres,
+  getSeasons,
+  getEpisodeByID
+} from '../dataOut/tvshows.js';
 export const routerTV = express.Router();
 
 /**
  * /tv
  */
-routerTV.get('/tv', (req, res) => {
-  
+routerTV.get('/tv', async (req, res) => {
+  const data = await getSeries();
+  res.json(data);
 });
 
 routerTV.post('/tv', (req, res) => {
-  
+
 });
 
 /**
  * /tv/:data?
  */
 routerTV.get('/tv/:data?', (req, res) => {
-  
+  const id = req.params.data;
+  const data = getSeriesByID(id);
+  res.json(data);
 });
 
 routerTV.post('/tv/:data?', (req, res) => {

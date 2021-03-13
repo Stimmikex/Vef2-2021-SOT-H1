@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS series (
 	works BOOLEAN,
 	tagline TEXT, 
 	image character varying(255) NOT NULL,
-	description character varying(255),
+	description TEXT,
 	language character varying(255),
 	network character varying(255),
 	homepage character varying(255)
@@ -37,13 +37,12 @@ CREATE TABLE IF NOT EXISTS seasons (
 
 CREATE TABLE IF NOT EXISTS episodes (
 	id serial primary key,
+	name character varying(255),
 	number INTEGER,
 	airDate DATE,
 	overview TEXT,
 	season_id INTEGER,
-	series_id INTEGER,
-	FOREIGN KEY (season_id) REFERENCES seasons (id),
-	FOREIGN KEY (series_id) REFERENCES series (id)
+	FOREIGN KEY (season_id) REFERENCES seasons (id)
 );
 
 CREATE TABLE IF NOT EXISTS users (

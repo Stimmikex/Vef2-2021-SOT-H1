@@ -1,6 +1,7 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
 import { promises as fs } from 'fs';
+import { insertSeries, insertSeasons, insertEpisodes} from './csvReader/reader.js';
 
 async function readFileAsync(sql) {
   try {
@@ -47,19 +48,14 @@ export async function query(q, v = []) {
 
 async function main() {
   // eslint-disable-next-line no-template-curly-in-string
-  console.info('Set upp gagnagrunn á ${connectionString}');
-  // droppa töflu ef til
-  await query('DROP TABLE IF EXISTS applications');
-  console.info('Töflu eytt');
+  console.info(`Set upp gagnagrunn á ${connectionString}`);
 
-  // búa til töflu út frá skema
   try {
-    const createTable = await readFileAsync('./sql/schema.sql');
-    await query(createTable.toString('utf8'));
-    console.info('Tafla búin til');
-  } catch (e) {
-    console.error('Villa við að búa til töflu:', e.message);
-    return;
+    await insertSeries();
+    await insertSeasons();
+    await insertEpisodes();
+  } catch (error) {
+    console.error("GetGood" + error);
   }
 }
 

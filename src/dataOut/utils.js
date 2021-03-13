@@ -1,13 +1,11 @@
 import pg from 'pg';
+import dotenv from 'dotenv';
 
-const {
-  DATABASE_URL: connectionString,
-  NODE_ENV: nodeEnv = 'development',
-} = process.env;
+dotenv.config();
 
-const ssl = nodeEnv !== 'development' ? { rejectUnauthorized: false } : false;
+const connectionString = process.env.DATABASE_URL;
 
-const pool = new pg.Pool({ connectionString, ssl });
+const pool = new pg.Pool({ connectionString });
 
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
@@ -17,13 +15,16 @@ pool.on('error', (err) => {
 export async function query(q, values = []) {
   const client = await pool.connect();
 
+  let result;
+
   try {
-    const result = await client.query(q, values);
-    return result;
-  } catch (e) {
-    console.error('Error selecting', e);
-    return e;
+    result = await client.query(q, values);
+  } catch (err) {
+    console.error('Villa í query', err);
+    throw err;
   } finally {
     client.release();
   }
+
+  return result;
 }
