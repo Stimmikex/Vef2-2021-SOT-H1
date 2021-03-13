@@ -23,7 +23,7 @@ export async function makeSeries(data) {
   const q = `
     INSERT INTO
     series (name, airDate, works, tagline, image, description, language, network, homepage)
-    VALUES ($1, $2, $3, $4)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   `;
   try {
     await query(q, [data.name, data.airDate, data.inProduction, data.tagline, data.image, data.description, data.language, data.network, data.homepage]);

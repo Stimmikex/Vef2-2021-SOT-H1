@@ -62,17 +62,16 @@ routerUsers.post('/users/register', async (req, res) => {
  * /users/login
  * með netfangi og lykilorði skilar token ef gögn rétt
  */
-routerUsers.post('/users/login', async (req, res) => {
-  // ræna frá fyrrum verkefnum.
-  '/login',
-  passport.authenticate('local', {
-    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
-    failureRedirect: '/login',
-  }),
-  (req, res) => {
-    res.redirect('/admin');
-  },
-});
+// routerUsers.post('/users/login', async (req, res) => {
+//   '/login',
+//   passport.authenticate('local', {
+//     failureMessage: 'Notandanafn eða lykilorð vitlaust.',
+//     failureRedirect: '/login',
+//   }),
+//   (req, res) => {
+//     res.redirect('/admin');
+//   },
+// });
 
 /**
  * /users/me

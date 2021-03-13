@@ -6,7 +6,6 @@ function insertSeries() {
     fs.createReadStream('../../data/series.csv')
     .pipe(csv())
     .on('data', async (row) => {
-        console.log(row);
         await makeSeries(row);
     })
     .on('end', () => {
