@@ -25,7 +25,6 @@ routerUsers.get('/users', async (req, res) => {
 routerUsers.get('/users/:data?', async (req, res) => {
   const id = req.params.data;
   const data = await getUserByID(id);
-  console.log(data);
   return res.json(data);
 });
 

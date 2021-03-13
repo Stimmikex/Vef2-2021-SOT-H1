@@ -60,7 +60,7 @@ export async function getSeriesByID(id) {
   const q = 'SELECT * FROM series WHERE id = $1';
   let result = '';
   try {
-    result = await query(q, id);
+    result = await query(q, [id]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
@@ -73,6 +73,7 @@ export async function getSeriesByID(id) {
  * @param {JSON.Object} data
  */
 export async function updateShowByID(id, data) {
+  // need work
   const q = `
     UPDATE tv_shows
       SET name = $1, 
@@ -167,11 +168,22 @@ export async function deleteSeasonByID(id) {
   }
 }
 
-export async function getSeasonBySeriesId(id, season) {
-  const q = 'SELECT * FROM seasons WHERE series_id = $1 AND number = $2 ';
+export async function getSeasonBySeriesIdAndNumber(id, season) {
+  const q = 'SELECT * FROM seasons WHERE series_id = $1 AND number = $2';
   let result = '';
   try {
     result = await query(q, [id, season]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows;
+}
+
+export async function getSeasonBySeriesId(id) {
+  const q = 'SELECT * FROM seasons WHERE series_id = $1';
+  let result = '';
+  try {
+    result = await query(q, [id]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
@@ -189,7 +201,7 @@ export async function makeEpisode(data) {
     date = null;
   }
   try {
-    const dataman = await getSeasonBySeriesId(data.season, data.serieId);
+    const dataman = await getSeasonBySeriesIdAndNumber(data.season, data.serieId);
     await query(q, [data.name, data.number, date, data.overview, dataman[0].id]);
   } catch (e) {
     console.info('Error occured :>> ', e);
@@ -219,7 +231,7 @@ export async function deleteEpisodeByID(show, season, id) {
 }
 
 export async function getGenres() {
-  const q = 'SELECT * FROM show_category';
+  const q = 'SELECT * FROM category';
   let result = '';
   try {
     result = await query(q);
