@@ -5,9 +5,11 @@ import {
   getSeasonByID,
   getGenres,
   getSeasons,
-  getEpisodeByID,
+  getEpisodeById,
   getSeasonBySeriesId,
   getSeasonBySeriesIdAndNumber,
+  getEpisodeBySeasonId,
+  getEpisodeBySeasonIdAndNumber,
 } from '../dataOut/tvshows.js';
 export const routerTV = express.Router();
 
@@ -57,10 +59,9 @@ routerTV.post('/tv/:data?/season', (req, res) => {
  * /tv/:data?/season/:id?
  */
 routerTV.get('/tv/:data?/season/:season?', async (req, res) => {
-  const id = req.params.data;
-  const season = req.params.season;
-  const data = await getSeasonBySeriesIdAndNumber(id, season);
-  res.json(data);
+  const { data, season } = req.params;
+  const dataman = await getSeasonBySeriesIdAndNumber(data, season);
+  res.json(dataman);
 });
 
 routerTV.delete('/tv/:data?/season/:season?', (req, res) => {
@@ -88,8 +89,11 @@ routerTV.delete('/genres', (req, res) => {
 /**
  * /genres
  */
- routerTV.get('/tv/:data?/season/:season?/episode/:ep?', (req, res) => {
-  
+routerTV.get('/tv/:data?/season/:season?/episode/:ep?', async (req, res) => {
+  const { data, season, ep } = req.params;
+  const dataman = await getSeasonBySeriesIdAndNumber(data, season);
+  const datason = await getEpisodeBySeasonIdAndNumber(dataman[0].id, ep);
+  res.json(datason);
 });
 
 routerTV.delete('/tv/:data?/season/:season?/episode/:ep?', (req, res) => {

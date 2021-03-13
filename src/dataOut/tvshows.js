@@ -208,11 +208,33 @@ export async function makeEpisode(data) {
   }
 }
 
-export async function getEpisodeByID(id) {
+export async function getEpisodeBySeasonId(id) {
+  const q = 'SELECT * FROM Episodes WHERE season_id = $1';
+  let result = '';
+  try {
+    result = await query(q, [id]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows;
+}
+
+export async function getEpisodeBySeasonIdAndNumber(id, ep) {
+  const q = 'SELECT * FROM Episodes WHERE season_id = $1 AND number = $2';
+  let result = '';
+  try {
+    result = await query(q, [id, ep]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows;
+}
+
+export async function getEpisodeById(id) {
   const q = 'SELECT * FROM Episodes WHERE id = $1';
   let result = '';
   try {
-    result = await query(q, id);
+    result = await query(q, [id]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
