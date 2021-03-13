@@ -50,10 +50,23 @@ async function main() {
   // eslint-disable-next-line no-template-curly-in-string
   console.info(`Set upp gagnagrunn á ${connectionString}`);
 
+  // búa til töflu út frá skema
+  try {
+    const createTable = await readFileAsync('./sql/schema.sql');
+    await query(createTable.toString('utf8'));
+    console.info('Tafla búin til');
+  } catch (e) {
+    console.error('Villa við að búa til töflu:', e.message);
+    return;
+  }
+
   try {
     await insertSeries();
+    console.info('added series');
     await insertSeasons();
+    console.info('added seasons');
     await insertEpisodes();
+    console.info('added episodes');
   } catch (error) {
     console.error("GetGood" + error);
   }
