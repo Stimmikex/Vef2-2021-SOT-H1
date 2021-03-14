@@ -25,7 +25,7 @@ routerUsers.get('/users', async (req, res) => {
 routerUsers.get('/users/:data?', async (req, res) => {
   const id = req.params.data;
   const data = await getUserByID(id);
-  return res.json(data);
+  res.json(data);
 });
 
 /**
@@ -43,7 +43,7 @@ routerUsers.patch('/users/:data?', async (req, res) => {
   await updateUserByID(id, bool);
   // gets the user by id
   const data = await getUserByID(id);
-  return res.json(data);
+  res.json(data);
 });
 
 /**
@@ -54,7 +54,7 @@ routerUsers.patch('/users/:data?', async (req, res) => {
 routerUsers.post('/users/register', async (req, res) => {
   // not complete
   await makeUser('data');
-  return res.json(req.user);
+  res.json(req.user);
 });
 
 /**
@@ -77,7 +77,7 @@ routerUsers.post('/users/register', async (req, res) => {
  * skilar upplýsingum um notanda sem á token, auðkenni og netfangi, aðeins ef notandi innskráður
  */
 routerUsers.get('/users/me', async (req, res) => {
-  return res.json(req.user)
+  res.json(req.user);
 });
 /**
  * uppfærir netfang, lykilorð eða bæði ef gögn rétt, aðeins ef notandi innskráður
