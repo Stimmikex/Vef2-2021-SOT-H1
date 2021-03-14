@@ -72,7 +72,7 @@ export async function getSeriesByID(id) {
  * @param {INTEGER} id
  * @param {JSON.Object} data
  */
-export async function updateShowByID(id, data) {
+export async function updateSeriesByID(id, data) {
   // need work
   const q = `
     UPDATE tv_shows
@@ -100,7 +100,7 @@ export async function updateShowByID(id, data) {
  * @param {INTEGER} id
  * @param {JSON.Object} data
  */
-export async function deleteShowByID(id) {
+export async function deleteSeriesByID(id) {
   const q = `
     DELETE FROM tv_shows WHERE id = $1;
   `;
@@ -243,7 +243,7 @@ export async function getEpisodeById(id) {
 
 export async function deleteEpisodeByID(show, season, id) {
   const q = `
-    DELETE FROM signup WHERE user_id = $1 AND event_id = $2;
+    DELETE FROM episodes WHERE user_id = $1 AND event_id = $2;
   `;
   try {
     await query(q, [show, season, id]);
@@ -261,6 +261,17 @@ export async function getGenres() {
     console.info('Error occured :>> ', e);
   }
   return result.rows;
+}
+
+export async function deleteGenres(id) {
+  const q = `
+    DELETE FROM category WHERE id = $1;
+  `;
+  try {
+    await query(q, [id]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
 }
 
 export async function makeGenre(data) {
