@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS seriesCategory (
 	id serial primary key,
 	category_id INTEGER,
 	series_id INTEGER,
-	FOREIGN KEY (category_id) REFERENCES category (id),
-	FOREIGN KEY (series_id) REFERENCES series (id)
+	FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE,
+	FOREIGN KEY (series_id) REFERENCES series (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS seasons (
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS seasons (
 	overview TEXT,
 	poster character varying(255),
 	series_id INTEGER,
-	FOREIGN KEY (series_id) REFERENCES series(id)
+	FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS episodes (
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS episodes (
 	airDate DATE,
 	overview TEXT,
 	season_id INTEGER,
-	FOREIGN KEY (season_id) REFERENCES seasons (id)
+	FOREIGN KEY (season_id) REFERENCES seasons (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -59,6 +59,6 @@ CREATE TABLE IF NOT EXISTS episodeUser (
 	user_id INTEGER,
 	status character varying(255) NOT NULL,
 	rating INTEGER,
-	FOREIGN KEY (episodes_id) REFERENCES episodes(id)
-	FOREIGN KEY (user_id) REFERENCES users(id)
+	FOREIGN KEY (episodes_id) REFERENCES episodes(id) ON DELETE CASCADE
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
