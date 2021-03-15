@@ -16,8 +16,6 @@ const {
   NODE_ENV: nodeEnv = 'development',
 } = process.env;
 
-console.log(process.env);
-
 if (!connectionString) {
   console.error('Vantar DATABASE_URL!');
   process.exit(1);
@@ -114,6 +112,7 @@ function ensureLoggedIn(req, res, next) {
 
   return res.redirect('/login');
 }
+
 
 app.use(routerUsers);
 app.use(routerTV);

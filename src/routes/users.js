@@ -1,4 +1,6 @@
 import express from 'express';
+import passport from 'passport';
+import { Strategy } from 'passport-local';
 import {
   getUserByID,
   getUsers,
@@ -97,30 +99,6 @@ function ensureLoggedIn(req, res, next) {
   return res.redirect('/login');
 }
 
-routerUsers.get('/login', (req, res) => {
-  if (req.isAuthenticated()) {
-    return res.redirect('/');
-  }
-
-  let message = '';
-
-  // Athugum hvort einhver skilaboð séu til í session, ef svo er birtum þau
-  // og hreinsum skilaboð
-  if (req.session.messages && req.session.messages.length > 0) {
-    message = req.session.messages.join(', ');
-    req.session.messages = [];
-  }
-
-  return res.render('userPages/login', { message });
-});
-
-routerUsers.get('/register', (req, res) => {
-  if (req.isAuthenticated()) {
-    const user = req.user;
-  }
-  res.render('userPages/register', { user });
-});
-
 // hér væri hægt að bæta við enn frekari (og betri) staðfestingu á gögnum
 async function validateUser(username, password) {
   if (typeof username !== 'string' || username.length < 2) {
@@ -157,12 +135,35 @@ async function register(req, res, next) {
     `);
   }
 
-  await createUser(username, password);
+  await makeUser(username, password);
 
   // næsta middleware mun sjá um að skrá notanda inn því hann verður til
   // og `username` og `password` verða ennþá sett sem rétt í `req`
   return next();
 }
+
+routerUsers.post(
+  '/register',
+  register,
+  passport.authenticate('local', {
+    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
+    failureRedirect: '/login',
+  }),
+  (req, res) => {
+    res.redirect('/admin');
+  },
+);
+
+routerUsers.post(
+  '/login',
+  passport.authenticate('local', {
+    failureMessage: 'Notandanafn eða lykilorð vitlaust.',
+    failureRedirect: '/login',
+  }),
+  (req, res) => {
+    res.redirect('/admin');
+  },
+);
 
 routerUsers.get('/logout', (req, res) => {
   req.logout();
