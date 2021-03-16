@@ -32,9 +32,10 @@ routerTV.get('/tv', async (req, res) => {
 
 // eslint-disable-next-line no-unused-vars
 routerTV.post('/tv', (req, _res) => {
-  const admin = req.user;
-  if (typeof admin !== 'undefined') {
-    if (admin.admin) {
+  // eslint-disable-next-line prefer-destructuring
+  const user = req.user;
+  if (typeof user !== 'undefined') {
+    if (user.admin) {
       const data = req.body;
       makeSeries(data);
       console.info('Data added');
