@@ -5,7 +5,7 @@ import {
   updateState,
   updateRating,
   deleteRating,
-  deleteState
+  deleteState,
 } from '../dataOut/usersXtv.js';
 
 export const routerUserXtv = express.Router();
@@ -13,7 +13,7 @@ export const routerUserXtv = express.Router();
 /**
  * /tv/:data?/rate
  */
-routerUserXtv.get('/tv/:seriesId?/rate', (req, res) => {
+routerUserXtv.post('/tv/:seriesId?/rate', (req, res) => {
   const { user } = req;
   if (typeof user !== 'undefined') {
     const data = req.body;
@@ -51,7 +51,7 @@ routerUserXtv.delete('/tv/:data?/rate', (req, res) => {
 /**
  * /tv/:data?/state
  */
-routerUserXtv.get('/tv/:data?/state', (req, res) => {
+routerUserXtv.post('/tv/:data?/state', (req, res) => {
   const { user } = req;
   if (typeof user !== 'undefined') {
     const data = req.body;
