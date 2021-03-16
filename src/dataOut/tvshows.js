@@ -212,7 +212,7 @@ export async function makeEpisode(data) {
     date = null;
   }
   try {
-    const dataman = await getSeasonBySeriesIdAndNumber(data.season, data.serieId);
+    const dataman = await getSeasonBySeriesIdAndNumber(data.serieId, data.season);
     await query(q, [data.name, data.number, date, data.overview, dataman[0].id]);
   } catch (e) {
     console.info('Error occured :>> ', e);

@@ -37,5 +37,3 @@ export async function insertEpisodes() {
       console.log('CSV file successfully processed');
     });
 }
-
-insertSeries();
