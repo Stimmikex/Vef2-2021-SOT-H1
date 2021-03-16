@@ -59,6 +59,6 @@ CREATE TABLE IF NOT EXISTS episodeUser (
 	user_id INTEGER,
 	status character varying(255) NOT NULL,
 	rating INTEGER,
-	FOREIGN KEY (episodes_id) REFERENCES episodes(id) ON DELETE CASCADE
+	FOREIGN KEY (episodes_id) REFERENCES episodes(id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

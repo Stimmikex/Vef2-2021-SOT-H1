@@ -3,11 +3,11 @@ import fs from 'fs';
 import { makeSeason, makeSeries, makeEpisode } from '../dataOut/tvshows.js';
 
 export async function insertSeries() {
-  fs.createReadStream('../../data/series.csv')
+  fs.createReadStream('./data/series.csv')
     .pipe(csv())
     .on('data', async (row) => {
       console.log(row);
-      // await makeSeries(row);
+      await makeSeries(row);
     })
     .on('end', () => {
       console.log('CSV file successfully processed');
