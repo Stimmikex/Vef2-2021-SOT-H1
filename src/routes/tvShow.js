@@ -54,17 +54,33 @@ routerTV.get('/tv/:seriesId?', async (req, res) => {
   res.json(data);
 });
 
-routerTV.patch('/tv/:seriesId?', async (req, res) => {
-  const { seriesId } = req.params;
-  const data = req.body;
-  await updateSeriesByID(data, seriesId);
-  console.info('Data added');
+routerTV.patch('/tv/:seriesId?', async (req, _res) => {
+  // eslint-disable-next-line prefer-destructuring
+  const user = req.user;
+  if (typeof user !== 'undefined') {
+    if (user.admin) {
+      const { seriesId } = req.params;
+      const data = req.body;
+      await updateSeriesByID(data, seriesId);
+      console.info('Data added');
+    }
+  } else {
+    console.info('User needs to be admin');
+  }
 });
 
-routerTV.delete('/tv/:seriesId?', (req, res) => {
-  const { seriesId } = req.params;
-  deleteSeriesByID(seriesId);
-  console.info('Data has been deleted');
+routerTV.delete('/tv/:seriesId?', (req, _res) => {
+  // eslint-disable-next-line prefer-destructuring
+  const user = req.user;
+  if (typeof user !== 'undefined') {
+    if (user.admin) {
+      const { seriesId } = req.params;
+      deleteSeriesByID(seriesId);
+      console.info('Data has been deleted');
+    }
+  } else {
+    console.info('User needs to be admin');
+  }
 });
 
 /**
@@ -77,10 +93,18 @@ routerTV.get('/tv/:seriesId?/season', async (req, res) => {
 });
 
 routerTV.post('/tv/:seriesId?/season', async (req, res) => {
-  const { seriesId } = req.params;
-  const data = req.body;
-  await makeSeason(data, seriesId);
-  console.info('Data added');
+  // eslint-disable-next-line prefer-destructuring
+  const user = req.user;
+  if (typeof user !== 'undefined') {
+    if (user.admin) {
+      const { seriesId } = req.params;
+      const data = req.body;
+      await makeSeason(data, seriesId);
+      console.info('Data added');
+    }
+  } else {
+    console.info('User needs to be admin');
+  }
 });
 
 /**
@@ -93,36 +117,60 @@ routerTV.get('/tv/:seriesId?/season/:seasonId?', async (req, res) => {
 });
 
 routerTV.delete('/tv/:seriesId?/season/:seasonId?', async (req, res) => {
-  const { seriesId, seasonId } = req.params;
-  await deleteSeasonByID(seasonId, seriesId);
-  console.info('Data has been deleted');
+  // eslint-disable-next-line prefer-destructuring
+  const user = req.user;
+  if (typeof user !== 'undefined') {
+    if (user.admin) {
+      const { seriesId, seasonId } = req.params;
+      await deleteSeasonByID(seasonId, seriesId);
+      console.info('Data has been deleted');
+    }
+  } else {
+    console.info('User needs to be admin');
+  }
 });
 
 /**
  * /tv/:data?/season/:id?/episode/
  */
 routerTV.post('/tv/:seriesId?/season/:seasonId?/episode/', async (req, res) => {
-  const { seriesId, seasonId } = req.params;
-  const data = req.body;
-  await makeEpisode(data, seriesId, seasonId);
-  console.info('Data added');
+  // eslint-disable-next-line prefer-destructuring
+  const user = req.user;
+  if (typeof user !== 'undefined') {
+    if (user.admin) {
+      const { seriesId, seasonId } = req.params;
+      const data = req.body;
+      await makeEpisode(data, seriesId, seasonId);
+      console.info('Data added');
+    }
+  } else {
+    console.info('User needs to be admin');
+  }
 });
 
 /**
- * /tv/:id/season/:id/episode/:id
+ * /genres
  */
-routerTV.get('/genres', (req, res) => {
+routerTV.get('/genres', (_req, res) => {
   const data = getGenres();
   res.json(data);
 });
 
 routerTV.delete('/genres', async (req, res) => {
-  await deleteGenres();
-  console.info('Data has been deleted');
+  // eslint-disable-next-line prefer-destructuring
+  const user = req.user;
+  if (typeof user !== 'undefined') {
+    if (user.admin) {
+      await deleteGenres();
+      console.info('Data has been deleted');
+    }
+  } else {
+    console.info('User needs to be admin');
+  }
 });
 
 /**
- * /genres
+ * /tv/:id/season/:id/episode/:id
  */
 routerTV.get('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', async (req, res) => {
   const { seriesId, seasonId, episodeId } = req.params;
@@ -131,8 +179,16 @@ routerTV.get('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', async (req,
   res.json(datason);
 });
 
-routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', async (req, res) => {
-  const { seriesId, seasonId, episodeId } = req.params;
-  await deleteEpisodeByID(seriesId, seasonId, episodeId);
-  console.info('Data has been deleted');
+routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', async (req, _res) => {
+  // eslint-disable-next-line prefer-destructuring
+  const user = req.user;
+  if (typeof user !== 'undefined') {
+    if (user.admin) {
+      const { seriesId, seasonId, episodeId } = req.params;
+      await deleteEpisodeByID(seriesId, seasonId, episodeId);
+      console.info('Data has been deleted');
+    }
+  } else {
+    console.info('User needs to be admin');
+  }
 });
