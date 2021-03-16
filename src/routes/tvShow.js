@@ -30,10 +30,18 @@ routerTV.get('/tv', async (req, res) => {
   res.json(data);
 });
 
-routerTV.post('/tv', (req, res) => {
-  const data = req.body;
-  makeSeries(data);
-  console.info('Data added');
+// eslint-disable-next-line no-unused-vars
+routerTV.post('/tv', (req, _res) => {
+  const admin = req.user;
+  if (typeof admin !== 'undefined') {
+    if (admin.admin) {
+      const data = req.body;
+      makeSeries(data);
+      console.info('Data added');
+    }
+  } else {
+    console.info('User needs to be admin');
+  }
 });
 
 /**
