@@ -61,12 +61,12 @@ CREATE TABLE IF NOT EXISTS users (
 	role boolean DEFAULT false
 );
 
-CREATE TABLE IF NOT EXISTS episodeUser (
+CREATE TABLE IF NOT EXISTS seriesUser (
 	id serial primary key,
-	episodes_id INTEGER,
-	user_id INTEGER,
 	status character varying(255) NOT NULL,
 	rating INTEGER,
-	FOREIGN KEY (episodes_id) REFERENCES episodes(id) ON DELETE CASCADE,
+	series_id INTEGER,
+	user_id INTEGER,
+	FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE,
 	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
