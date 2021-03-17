@@ -24,14 +24,16 @@ export async function getUserByID(id) {
 }
 
 export async function getUserByName(name) {
-  const q = 'SELECT name, email, role FROM users WHERE name = $1';
+  const q = 'SELECT name, email, password, role FROM users WHERE name = $1';
   let result = '';
+
   try {
     result = await query(q, [name]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
-  return result.rows;
+  
+  return result.rows[0];
 }
 
 export async function updateUser(data) {

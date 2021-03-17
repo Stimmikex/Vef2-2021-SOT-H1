@@ -42,7 +42,7 @@ routerUsers.post('/users/register', async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   const { username, email, password } = req.body;
-
+  console.log(req.body);
   const createdUser = await makeUser(username, email, password);
 
   if (createdUser) {
@@ -80,10 +80,11 @@ routerUsers.post('/users/login', async (req, res) => {
     });
   }
 
-  const passwordCheck = comparePasswords(password, user.password);
+  const passwordCheck = await comparePasswords(password, user.password);
 
   if (passwordCheck) {
     const token = createTokenForUser(user.id);
+    console.log(token);
     return res.json({
       user: {
         id: user.id,
