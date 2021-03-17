@@ -16,7 +16,7 @@ export async function addState() {
 
 }
 
-export async function changeState() {
+export async function updateState() {
 
 }
 

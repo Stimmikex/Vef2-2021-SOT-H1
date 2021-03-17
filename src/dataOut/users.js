@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { query } from './utils.js';
 
 export async function getUsers() {
@@ -23,7 +24,7 @@ export async function getUserByID(id) {
 }
 
 export async function getUserByName(name) {
-  const q = 'SELECT name, email, role FROM users WHERE username = $1';
+  const q = 'SELECT name, email, role FROM users WHERE name = $1';
   let result = '';
   try {
     result = await query(q, [name]);
@@ -33,7 +34,7 @@ export async function getUserByName(name) {
   return result.rows;
 }
 
-export async function updateUserByID(id, bool) {
+export async function updateUser(data) {
   const q = `
     UPDATE users
       SET role = $2, 
@@ -42,39 +43,31 @@ export async function updateUserByID(id, bool) {
   `;
   let result = '';
   try {
-    result = await query(q, [id, bool]);
+    result = await query(q, [data.id, data.admin]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
   return result.rows;
 }
 
-export async function makeUser(data) {
-  const hashedPassword = await bcrypt.hash(data.password, 11);
+export async function makeUser(username, email, password) {
+  const hashedPassword = await bcrypt.hash(password, 10);
   const q = `
     INSERT INTO
-      user (name, email, password, role)
+      users (name, email, password, role)
     VALUES ($1, $2, $3, $4)
-    WHERE id = $5
   `;
   let result = '';
   try {
-    result = await query(q, [data.name, data.email, hashedPassword, data.role]);
+    result = await query(q, [username, email, hashedPassword, false]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
   return result.rows;
 }
 
-export async function loginUser(data) {
+export async function comparePasswords(password, hash) {
+  const result = await bcrypt.compare(password, hash);
 
+  return result;
 }
-
-export async function getUserWithToken() {
-  
-}
-
-export async function updateUserWithToken(data) {
-  
-}
-
