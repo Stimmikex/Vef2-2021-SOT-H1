@@ -48,16 +48,40 @@ export function requireAuthentication(req, res, next) {
     'jwt',
     { session: false },
     (err, user, info) => {
-      console.log(user);
+      console.info(user);
       if (err) {
         return next(err);
       }
 
       if (!user) {
-        const error = info.name === 'TokenExpiredError'
-          ? 'expired token' : 'invalid token';
+        const error = info.name === 'TokenExpiredError' ? 'expired token' : 'invalid token';
         return res.status(401).json({ error });
       }
+
+      req.user = user;
+      return next();
+    },
+  )(req, res, next);
+}
+
+export function requireAdminAuthentication(req, res, next) {
+  return passport.authenticate(
+    'jwt',
+    { session: false },
+    (err, user, info) => {
+      console.info(user);
+      if (err) {
+        return next(err);
+      }
+
+      if (!user) {
+        const error = info.name === 'TokenExpiredError' ? 'expired token' : 'invalid token';
+        return res.status(401).json({ error });
+      }
+      if (!user.role) {
+        return res.status(401).json({ error: 'user is not admin' });
+      }
+
       req.user = user;
       return next();
     },

@@ -13,7 +13,7 @@ import {
   comparePasswords,
 } from '../dataOut/users.js';
 import * as db from '../dataOut/utils.js';
-import { createTokenForUser, requireAuthentication } from '../dataOut/login.js';
+import { createTokenForUser, requireAuthentication, requireAdminAuthentication } from '../dataOut/login.js';
 
 export const routerUsers = express.Router();
 
@@ -21,20 +21,11 @@ export const routerUsers = express.Router();
  * /users/
  * skilar síðu af notendum, aðeins ef notandi sem framkvæmir er stjórnandi
  */
-routerUsers.get('/users', requireAuthentication, async (req, res) => {
+routerUsers.get('/users', requireAdminAuthentication, async (req, res) => {
   const data = await getUsers();
   res.json(data);
 });
 
-/**
- * /users/:id
- * skilar notanda, aðeins ef notandi sem framkvæmir er stjórnandi
- */
-routerUsers.get('/users/', async (req, res) => {
-  const id = req.params.data;
-  const data = await getUserByID(id);
-  res.json(data);
-});
 
 routerUsers.post('/users/register', async (req, res) => {
   const errors = validationResult(req);
@@ -146,7 +137,7 @@ routerUsers.patch('/users/me', requireAuthentication,
     });
   });
 
-routerUsers.get('/users/:id', requireAuthentication, async (req, res) => {
+routerUsers.get('/users/:id', requireAdminAuthentication, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
