@@ -37,7 +37,7 @@ async function strat(data, next) {
 passport.use(new Strategy(jwtOptions, strat));
 
 export function createTokenForUser(id) {
-  const payload = { id };
+  const payload = { id: id };
   const tokenOptions = { expiresIn: tokenLifetime };
   const token = jwt.sign(payload, jwtSecret, tokenOptions);
   return token;
@@ -48,6 +48,7 @@ export function requireAuthentication(req, res, next) {
     'jwt',
     { session: false },
     (err, user, info) => {
+      console.log(user);
       if (err) {
         return next(err);
       }
@@ -57,7 +58,6 @@ export function requireAuthentication(req, res, next) {
           ? 'expired token' : 'invalid token';
         return res.status(401).json({ error });
       }
-
       req.user = user;
       return next();
     },

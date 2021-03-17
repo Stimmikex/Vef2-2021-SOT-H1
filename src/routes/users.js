@@ -30,7 +30,7 @@ routerUsers.get('/users', requireAuthentication, async (req, res) => {
  * /users/:id
  * skilar notanda, aðeins ef notandi sem framkvæmir er stjórnandi
  */
-routerUsers.get('/users/:data?', async (req, res) => {
+routerUsers.get('/users/', async (req, res) => {
   const id = req.params.data;
   const data = await getUserByID(id);
   res.json(data);
@@ -151,7 +151,6 @@ routerUsers.get('/users/:id', requireAuthentication, async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-
   const data = await getUserByID(req.params.id);
   if (data) return res.json(data);
   return res.status(404).json({ msg: 'User not found' });

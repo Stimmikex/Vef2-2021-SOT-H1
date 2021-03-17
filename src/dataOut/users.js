@@ -24,7 +24,7 @@ export async function getUserByID(id) {
 }
 
 export async function getUserByName(name) {
-  const q = 'SELECT name, email, password, role FROM users WHERE name = $1';
+  const q = 'SELECT id, name, email, password, role FROM users WHERE name = $1';
   let result = '';
   try {
     result = await query(q, [name]);
