@@ -26,7 +26,6 @@ const jwtOptions = {
 async function strat(data, next) {
   // fáum id gegnum data sem geymt er í token
   const user = await getUserByID(data.id);
-
   if (user) {
     next(null, user);
   } else {
@@ -78,6 +77,7 @@ export function requireAdminAuthentication(req, res, next) {
         const error = info.name === 'TokenExpiredError' ? 'expired token' : 'invalid token';
         return res.status(401).json({ error });
       }
+      
       if (!user.role) {
         return res.status(401).json({ error: 'user is not admin' });
       }

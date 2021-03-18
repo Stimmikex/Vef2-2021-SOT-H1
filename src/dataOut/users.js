@@ -13,14 +13,14 @@ export async function getUsers() {
 }
 
 export async function getUserByID(id) {
-  const q = 'SELECT name, email, role FROM users WHERE id = $1';
+  const q = 'SELECT id, name, email, password, role FROM users WHERE id = $1';
   let result = '';
   try {
     result = await query(q, [id]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
-  return result.rows;
+  return result.rows[0];
 }
 
 export async function getUserByName(name) {
@@ -34,20 +34,44 @@ export async function getUserByName(name) {
   return result.rows[0];
 }
 
-export async function updateUser(data) {
+export async function updateUser(data, currentPass) {
   const q = `
     UPDATE users
-      SET role = $2, 
+      SET password = $2, email = $3
     WHERE
         id = $1  
   `;
+
+  let newPassword = data.password;
+  if (newPassword != currentPass) {
+    newPassword = await bcrypt.hash(newPassword, 10);
+  }
+
   let result = '';
+  
   try {
-    result = await query(q, [data.id, data.admin]);
+    result = await query(q, [data.id, newPassword, data.email]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
   return result.rows;
+}
+
+export async function upgradeUser(id) {
+  const q = `
+    UPDATE users
+      SET role = true
+    WHERE
+      id = $1
+    `;
+  let result = '';
+  try {
+    result = await query(q, [id]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+
+  return result;
 }
 
 export async function makeUser(username, email, password) {

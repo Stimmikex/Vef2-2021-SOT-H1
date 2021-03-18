@@ -8,6 +8,7 @@ import {
   getUserByID,
   getUsers,
   updateUser,
+  upgradeUser,
   makeUser,
   getUserByName,
   comparePasswords,
@@ -124,10 +125,16 @@ routerUsers.patch('/users/me', requireAuthentication,
       });
     }
 
-    req.user.email = email || req.user.email;
-    req.user.password = password || req.user.password;
+    const data = {
+      id: req.user.id,
+      email: '',
+      password: '',
+    }
 
-    const user = await updateUser(req.user);
+    data.email = email || req.user.email;
+    data.password = password || req.user.password;
+
+    const user = await updateUser(data, req.user.password);
 
     res.json({
       id: user.id,
@@ -144,6 +151,16 @@ routerUsers.get('/users/:id', requireAdminAuthentication, async (req, res) => {
   }
   const data = await getUserByID(req.params.id);
   if (data) return res.json(data);
+  return res.status(404).json({ msg: 'User not found' });
+});
+
+routerUsers.post('/users/:id', requireAdminAuthentication, async (req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  const data = await upgradeUser(req.params.id);
+  if(data) return res.json(data);
   return res.status(404).json({ msg: 'User not found' });
 });
 
