@@ -1,7 +1,6 @@
 import express from 'express';
 import {
   body,
-  param,
   validationResult,
 } from 'express-validator';
 import {
@@ -27,40 +26,81 @@ routerUsers.get('/users', requireAdminAuthentication, async (req, res) => {
   res.json(data);
 });
 
+routerUsers.post('/users/register',
+  body('username')
+    .trim()
+    .isLength({ min: 1, max: 256 })
+    .withMessage('username need to be 10 to 256'),
+  body('email')
+    .trim()
+    .isEmail()
+    .withMessage('email is needed')
+    .normalizeEmail(),
+  body('password')
+    .trim()
+    .isLength({ min: 10, max: 256 })
+    .withMessage('password need to be 10 to 256'),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { username, email, password } = req.body;
+    const createdUser = await makeUser(username, email, password);
 
-routerUsers.post('/users/register', async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  const { username, email, password } = req.body;
-  const createdUser = await makeUser(username, email, password);
+    if (createdUser) {
+      return res.json({
+        id: createdUser.id,
+        username: createdUser.name,
+        email: createdUser.email,
+        admin: createdUser.admin,
+        token: createTokenForUser(createdUser.id),
+      });
+    }
 
-  if (createdUser) {
-    return res.json({
-      id: createdUser.id,
-      username: createdUser.name,
-      email: createdUser.email,
-      admin: createdUser.admin,
-      token: createTokenForUser(createdUser.id),
-    });
-  }
+    return res.json({ error: 'Error registering' });
+  });
 
-  return res.json({ error: 'Error registering' });
-});
+routerUsers.post('/users/login',
+  body('username')
+    .trim()
+    .isLength({ min: 1, max: 256 })
+    .withMessage('username need to be 10 to 256'),
+  body('password')
+    .trim()
+    .isLength({ min: 10, max: 256 })
+    .withMessage('password need to be 10 to 256'),
+  async (req, res) => {
+    const errors = validationResult(req);
 
-routerUsers.post('/users/login', async (req, res) => {
-  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+    const { username, password } = req.body;
 
-  const { username, password } = req.body;
+    const user = await getUserByName(username);
 
-  const user = await getUserByName(username);
+    if (!user) {
+      return res.status(401).json({ error: 'username or password incorrect' });
+    }
 
-  if (!user) {
+    const passwordCheck = await comparePasswords(password, user.password);
+
+    if (passwordCheck) {
+      const token = createTokenForUser(user.id);
+      return res.json({
+        user: {
+          id: user.id,
+          username: user.name,
+          email: user.email,
+          admin: user.admin,
+        },
+        token,
+        expiresIn: 'not implemented',
+      });
+    }
+
     return res.status(401).json({
       errors: [{
         value: username,
@@ -69,33 +109,7 @@ routerUsers.post('/users/login', async (req, res) => {
         location: 'body',
       }],
     });
-  }
-
-  const passwordCheck = await comparePasswords(password, user.password);
-
-  if (passwordCheck) {
-    const token = createTokenForUser(user.id);
-    return res.json({
-      user: {
-        id: user.id,
-        username: user.name,
-        email: user.email,
-        admin: user.admin,
-      },
-      token,
-      expiresIn: 'not implemented',
-    });
-  }
-
-  return res.status(401).json({
-    errors: [{
-      value: username,
-      msg: 'username or password incorrect',
-      param: 'username',
-      location: 'body',
-    }],
   });
-});
 
 routerUsers.get('/users/me',
   requireAuthentication,
@@ -104,8 +118,16 @@ routerUsers.get('/users/me',
   });
 
 routerUsers.patch('/users/me', requireAuthentication,
-  body('password'),
-  body('email'),
+  body('password')
+    .if(body('password').exists())
+    .isLength({ min: 10, max: 256 })
+    .withMessage('password need to be 10 to 256'),
+  body('email')
+    .if(body('email').exists())
+    .isEmail()
+    .withMessage('email must exist')
+    .normalizeEmail(),
+  // eslint-disable-next-line consistent-return
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -129,7 +151,7 @@ routerUsers.patch('/users/me', requireAuthentication,
       id: req.user.id,
       email: '',
       password: '',
-    }
+    };
 
     data.email = email || req.user.email;
     data.password = password || req.user.password;
