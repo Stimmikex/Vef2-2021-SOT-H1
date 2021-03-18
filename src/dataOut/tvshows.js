@@ -45,11 +45,10 @@ export async function makeSeries(data) {
       data.language,
       data.network,
       data.homepage]);
-    console.log("date logged");
+    // console.log("date logged");
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
-  
 }
 
 /**
@@ -269,6 +268,17 @@ export async function getGenres() {
   let result = '';
   try {
     result = await query(q);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows;
+}
+
+export async function getGenresBySeriesId(id) {
+  const q = 'SELECT name, category_id FROM seriesCategory INNER JOIN category ON (category_id = category.id) WHERE series_id = $1';
+  let result = '';
+  try {
+    result = await query(q, [id]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
