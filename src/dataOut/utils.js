@@ -27,3 +27,7 @@ export async function query(q, values = []) {
   }
   return result;
 }
+
+export async function sanitizeInput(input, type) {
+  
+}

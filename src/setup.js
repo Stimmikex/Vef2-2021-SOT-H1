@@ -68,7 +68,7 @@ async function main() {
     await insertEpisodes();
     console.info('added episodes');
   } catch (error) {
-    console.error("GetGood" + error);
+    console.error("Villa kom upp við að setja gögn í gagnagrunnin; " + error);
   }
 }
 
