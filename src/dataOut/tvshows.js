@@ -1,14 +1,25 @@
 import { query } from './utils.js';
 
+export async function getSeriesCount() {
+  const q = `SELECT COUNT(*) AS count FROM series`;
+  let result = '';
+  try {
+    result = await query(q);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows[0];
+}
+
 /**
  * getShows()
  * @returns shows from database
  */
-export async function getSeries() {
-  const q = 'SELECT * FROM series';
+export async function getSeries(offset, limit) {
+  const q = 'SELECT * FROM series ORDER BY id ASC OFFSET $1 LIMIT $2';
   let result = '';
   try {
-    result = await query(q);
+    result = await query(q, [offset, limit]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
@@ -193,7 +204,7 @@ export async function deleteSeasonBySeriesIdAndNumber(seriesId, number) {
 }
 
 export async function getSeasonBySeriesIdAndNumber(seriesId, season) {
-  const q = 'SELECT * FROM seasons WHERE series_id = $1 AND number = $2';
+  const q = 'SELECT id, name, number, airdate, overview, poster FROM seasons WHERE series_id = $1 AND number = $2';
   let result = '';
   try {
     result = await query(q, [seriesId, season]);
@@ -232,8 +243,8 @@ export async function makeEpisode(data, seriesId, seasonId) {
   }
 }
 
-export async function getEpisodeBySeasonId(id) {
-  const q = 'SELECT * FROM Episodes WHERE season_id = $1';
+export async function getEpisodesBySeasonId(id) {
+  const q = 'SELECT name, number, airdate, overview FROM episodes WHERE season_id = $1 ORDER BY number ASC';
   let result = '';
   try {
     result = await query(q, [id]);
@@ -245,8 +256,6 @@ export async function getEpisodeBySeasonId(id) {
 
 export async function getEpisodeBySeasonIdAndNumber(id, ep) {
   const q = 'SELECT * FROM episodes WHERE season_id = $1 AND number = $2';
-  console.log(id);
-  console.log(ep);
   let result = '';
   try {
     result = await query(q, [id, ep]);
@@ -254,7 +263,7 @@ export async function getEpisodeBySeasonIdAndNumber(id, ep) {
     console.info('Error occured :>> ', e);
   }
   console.log(result.rows);
-  return result.rows;
+  return result.rows[0];
 }
 
 export async function getEpisodeById(id) {

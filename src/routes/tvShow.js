@@ -2,13 +2,14 @@ import express from 'express';
 import {
   getSeries,
   getSeriesByID,
+  getSeriesCount,
   getSeasonByID,
   getGenres,
   getSeasons,
   getEpisodeById,
   getSeasonBySeriesId,
   getSeasonBySeriesIdAndNumber,
-  getEpisodeBySeasonId,
+  getEpisodesBySeasonId,
   getEpisodeBySeasonIdAndNumber,
   makeSeries,
   updateSeriesByID,
@@ -29,16 +30,41 @@ export const routerTV = express.Router();
  * /tv
  */
 routerTV.get('/tv', async (req, res) => {
-  let { offset = 0 } = req.query;
+  let { offset = 0, limit } = req.query;
 
-  const data = await getSeries();
+  offset = Number(offset);
+
+  const count = await getSeriesCount();
+
+  const data = await getSeries(offset, limit);
+
+  let links = {
+    self: {
+      href: `http://localhost:4000/tv?offset=${offset}&limit=10`
+    },
+    next: null,
+    prev: null
+  };
+
+  if(offset + 10 < count.count) {
+    links.next = {
+      href: `http://localhost:4000/tv?offset=${offset+10}&limit=10`
+    };
+  }
+
+  if(offset - 10 >= 0) {
+    links.prev = {
+      href: `http://localhost:4000/tv?offset=${offset-10}&limit=10`
+    };
+  }
   
   const info = {
     limit: 10,
     offset: offset,
     series: data,
+    links: links
   }
-  res.json(data);
+  res.json(info);
 });
 
 // eslint-disable-next-line no-unused-vars
@@ -93,7 +119,6 @@ routerTV.get('/tv/:seriesId?/season', async (req, res) => {
 
 routerTV.post('/tv/:seriesId?/season', requireAdminAuthentication, async (req, res) => {
   const { seriesId } = req.params;
-  console.log(req.params);
   const data = req.body;
   await makeSeason(data, seriesId);
   console.info('Data added');
@@ -108,7 +133,16 @@ routerTV.get('/tv/:seriesId?/season/:seasonId?', async (req, res) => {
   const { seriesId, seasonId } = req.params;
   //skila fleiri upplýsingum
   const dataman = await getSeasonBySeriesIdAndNumber(seriesId, seasonId);
-  res.json(dataman);
+  const info = {
+    id: dataman.id,
+    name: dataman.name,
+    number: dataman.number,
+    airdate: dataman.airdate,
+    overview: dataman.overview,
+    poster: dataman.poster,
+    episode: await getEpisodesBySeasonId(dataman.id)
+  }
+  res.json(info);
 });
 
 routerTV.delete('/tv/:seriesId?/season/:seasonId?', requireAdminAuthentication, async (req, res) => {
@@ -151,7 +185,18 @@ routerTV.get('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', async (req,
   const { seriesId, seasonId, episodeId } = req.params;
   const dataman = await getSeasonBySeriesIdAndNumber(seriesId, seasonId);
   const datason = await getEpisodeBySeasonIdAndNumber(dataman.id, episodeId);
-  res.json(datason);
+  console.log(datason);
+  const info = {
+    id: datason.id,
+    name: datason.name,
+    number: datason.number,
+    airdate: datason.airdate,
+    overview: datason.overview,
+    seriesId: seriesId,
+    seasonnumber: dataman.id,
+    seasonId: seasonId
+  }
+  res.json(info);
 });
 
 routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', requireAdminAuthentication, async (req, res) => {
