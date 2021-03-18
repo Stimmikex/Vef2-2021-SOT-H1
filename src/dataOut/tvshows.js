@@ -49,6 +49,7 @@ export async function makeSeries(data) {
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
+  
 }
 
 /**
