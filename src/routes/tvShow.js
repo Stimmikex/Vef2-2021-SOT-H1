@@ -18,6 +18,7 @@ import {
   makeEpisode,
   deleteGenres,
   deleteEpisodeByID,
+  getGenresBySeriesId,
 } from '../dataOut/tvshows.js';
 
 import { requireAdminAuthentication } from '../dataOut/login.js';
@@ -55,7 +56,13 @@ routerTV.post('/tv', requireAdminAuthentication, async(req, res) => {
 routerTV.get('/tv/:seriesId?', async (req, res) => {
   const { seriesId } = req.params;
   const data = await getSeriesByID(seriesId);
-  res.json(data);
+  const genres = await getGenresBySeriesId(seriesId);
+  const seasons = await getSeasonBySeriesId(seriesId);
+  res.json({
+    series: data,
+    genres,
+    seasons,
+  });
 });
 
 routerTV.patch('/tv/:seriesId?', requireAdminAuthentication, async (req, res) => {
