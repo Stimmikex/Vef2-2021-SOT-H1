@@ -45,7 +45,7 @@ export async function makeSeries(data) {
       data.language,
       data.network,
       data.homepage]);
-    console.log("date logged");
+    // console.log("date logged");
   } catch (e) {
     console.info('Error occured :>> ', e);
   }

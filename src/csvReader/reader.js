@@ -10,7 +10,7 @@ export async function insertSeries() {
       await makeSeries(row);
     })
     .on('end', () => {
-      console.log('CSV file successfully processed');
+      console.log('series.csv successfully processed');
     });
 }
 
@@ -22,7 +22,7 @@ export async function insertSeasons() {
       await makeSeason(row);
     })
     .on('end', () => {
-      console.log('CSV file successfully processed');
+      console.log('seasons.cvs successfully processed');
     });
 }
 
@@ -34,6 +34,6 @@ export async function insertEpisodes() {
       await makeEpisode(row);
     })
     .on('end', () => {
-      console.log('CSV file successfully processed');
+      console.log('episodes.cvs successfully processed');
     });
 }
