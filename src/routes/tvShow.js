@@ -33,10 +33,12 @@ routerTV.get('/tv', async (req, res) => {
 });
 
 // eslint-disable-next-line no-unused-vars
-routerTV.post('/tv', requireAdminAuthentication, async(req, _res) => {
+routerTV.post('/tv', requireAdminAuthentication, async(req, res) => {
   const data = req.body;
   await makeSeries(data);
   console.info('Data added');
+
+  res.json(data);
 });
 
 /**

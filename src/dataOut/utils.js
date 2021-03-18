@@ -25,6 +25,5 @@ export async function query(q, values = []) {
   } finally {
     client.release();
   }
-
   return result;
 }
