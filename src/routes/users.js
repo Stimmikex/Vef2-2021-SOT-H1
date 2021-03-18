@@ -1,4 +1,5 @@
 import express from 'express';
+import xss from 'xss';
 import {
   body,
   validationResult,
@@ -12,7 +13,6 @@ import {
   getUserByName,
   comparePasswords,
 } from '../dataOut/users.js';
-import * as db from '../dataOut/utils.js';
 import { createTokenForUser, requireAuthentication, requireAdminAuthentication } from '../dataOut/login.js';
 
 export const routerUsers = express.Router();
@@ -46,7 +46,12 @@ routerUsers.post('/users/register',
       return res.status(400).json({ errors: errors.array() });
     }
     const { username, email, password } = req.body;
-    const createdUser = await makeUser(username, email, password);
+
+    const xssUsername = xss(username);
+    const xssEmail = xss(email);
+    const xssPassword = xss(password);
+
+    const createdUser = await makeUser(xssUsername, xssEmail, xssPassword);
 
     if (createdUser) {
       return res.json({
@@ -79,13 +84,16 @@ routerUsers.post('/users/login',
 
     const { username, password } = req.body;
 
-    const user = await getUserByName(username);
+    const xssUsername = xss(username);
+    const xssPassword = xss(password);
+
+    const user = await getUserByName(xssUsername);
 
     if (!user) {
       return res.status(401).json({ error: 'username or password incorrect' });
     }
 
-    const passwordCheck = await comparePasswords(password, user.password);
+    const passwordCheck = await comparePasswords(xssPassword, user.password);
 
     if (passwordCheck) {
       const token = createTokenForUser(user.id);
@@ -136,7 +144,10 @@ routerUsers.patch('/users/me', requireAuthentication,
 
     const { email, password } = req.body;
 
-    if (!email && !password) {
+    const xssEmail = xss(email);
+    const xssPassword = xss(password);
+
+    if (!xssEmail && !xssPassword) {
       return res.status(400).json({
         errors: [{
           value: req.body,
@@ -153,8 +164,8 @@ routerUsers.patch('/users/me', requireAuthentication,
       password: '',
     };
 
-    data.email = email || req.user.email;
-    data.password = password || req.user.password;
+    data.email = xssEmail || req.user.email;
+    data.password = xssPassword || req.user.password;
 
     const user = await updateUser(data, req.user.password);
 
@@ -178,11 +189,13 @@ routerUsers.get('/users/:id', requireAdminAuthentication, async (req, res) => {
 
 routerUsers.patch('/users/:id', requireAdminAuthentication, async (req, res) => {
   const errors = validationResult(req);
-  if(!errors.isEmpty()) {
+  if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const data = await upgradeUser(req.params.id);
-  if(data) return res.json(data);
+  const id = req.params.id;
+  const xssId = xss(id);
+  const data = await upgradeUser(xssId);
+  if (data) return res.json(data);
   return res.status(404).json({ msg: 'User not found' });
 });
 
