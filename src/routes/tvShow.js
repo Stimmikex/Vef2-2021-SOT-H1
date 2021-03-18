@@ -14,7 +14,7 @@ import {
   updateSeriesByID,
   deleteSeriesByID,
   makeSeason,
-  deleteSeasonByID,
+  deleteSeasonBySeriesIdAndNumber,
   makeEpisode,
   deleteGenres,
   deleteEpisodeByID,
@@ -28,7 +28,15 @@ export const routerTV = express.Router();
  * /tv
  */
 routerTV.get('/tv', async (req, res) => {
+  let { offset = 0 } = req.query;
+
   const data = await getSeries();
+  
+  const info = {
+    limit: 10,
+    offset: offset,
+    series: data,
+  }
   res.json(data);
 });
 
@@ -37,7 +45,7 @@ routerTV.post('/tv', requireAdminAuthentication, async(req, res) => {
   const data = req.body;
   await makeSeries(data);
   console.info('Data added');
-
+  //breyta þessu res seinna
   res.json(data);
 });
 
@@ -50,17 +58,21 @@ routerTV.get('/tv/:seriesId?', async (req, res) => {
   res.json(data);
 });
 
-routerTV.patch('/tv/:seriesId?', requireAdminAuthentication, async (req, _res) => {
+routerTV.patch('/tv/:seriesId?', requireAdminAuthentication, async (req, res) => {
   const { seriesId } = req.params;
   const data = req.body;
   await updateSeriesByID(data, seriesId);
   console.info('Data added');
+  //breyta þessu res seinna
+  res.json(data);
 });
 
-routerTV.delete('/tv/:seriesId?', requireAdminAuthentication, async (req, _res) => {
+routerTV.delete('/tv/:seriesId?', requireAdminAuthentication, async (req, res) => {
   const { seriesId } = req.params;
   await deleteSeriesByID(seriesId);
   console.info('Data has been deleted');
+  //breyta þessu res seinna
+  res.json({ seriesId });
 });
 
 /**
@@ -74,9 +86,12 @@ routerTV.get('/tv/:seriesId?/season', async (req, res) => {
 
 routerTV.post('/tv/:seriesId?/season', requireAdminAuthentication, async (req, res) => {
   const { seriesId } = req.params;
+  console.log(req.params);
   const data = req.body;
   await makeSeason(data, seriesId);
   console.info('Data added');
+  //breyta þessu res seinna
+  res.json(data);
 });
 
 /**
@@ -84,14 +99,17 @@ routerTV.post('/tv/:seriesId?/season', requireAdminAuthentication, async (req, r
  */
 routerTV.get('/tv/:seriesId?/season/:seasonId?', async (req, res) => {
   const { seriesId, seasonId } = req.params;
+  //skila fleiri upplýsingum
   const dataman = await getSeasonBySeriesIdAndNumber(seriesId, seasonId);
   res.json(dataman);
 });
 
 routerTV.delete('/tv/:seriesId?/season/:seasonId?', requireAdminAuthentication, async (req, res) => {
   const { seriesId, seasonId } = req.params;
-  await deleteSeasonByID(seasonId, seriesId);
+  await deleteSeasonBySeriesIdAndNumber(seriesId, seasonId);
   console.info('Data has been deleted');
+  //breyta þessu res seinna
+  res.json( {seriesId, seasonId });
 });
 
 /**
@@ -102,6 +120,8 @@ routerTV.post('/tv/:seriesId?/season/:seasonId?/episode/', requireAdminAuthentic
   const data = req.body;
   await makeEpisode(data, seriesId, seasonId);
   console.info('Data added');
+  //breyta þessu res seinna
+  res.json(data);
 });
 
 /**
@@ -123,12 +143,14 @@ routerTV.delete('/genres', requireAdminAuthentication, async (req, res) => {
 routerTV.get('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', async (req, res) => {
   const { seriesId, seasonId, episodeId } = req.params;
   const dataman = await getSeasonBySeriesIdAndNumber(seriesId, seasonId);
-  const datason = await getEpisodeBySeasonIdAndNumber(dataman[0].id, episodeId);
+  const datason = await getEpisodeBySeasonIdAndNumber(dataman.id, episodeId);
   res.json(datason);
 });
 
-routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', requireAdminAuthentication, async (req, _res) => {
+routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', requireAdminAuthentication, async (req, res) => {
   const { seriesId, seasonId, episodeId } = req.params;
   await deleteEpisodeByID(seriesId, seasonId, episodeId);
   console.info('Data has been deleted');
+  //breyta þessu res seinna
+  res.json( {seriesId, seasonId, episodeId });
 });
