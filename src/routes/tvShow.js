@@ -21,6 +21,12 @@ import {
   getGenresBySeriesId,
 } from '../dataOut/tvshows.js';
 
+import {
+  checkRatingBySeriesId,
+  getRatingBySeriesIdAndUserId,
+  getAVGRatingBySeriesId,
+} from '../dataOut/usersXtv.js';
+
 import { requireAdminAuthentication } from '../dataOut/login.js';
 
 export const routerTV = express.Router();
@@ -50,10 +56,18 @@ routerTV.get('/tv/:seriesId?', async (req, res) => {
   const data = await getSeriesByID(seriesId);
   const genres = await getGenresBySeriesId(seriesId);
   const seasons = await getSeasonBySeriesId(seriesId);
+  let ratings = '';
+  // need to add check if user is the right user.
+  if (checkRatingBySeriesId) {
+    // ratings = await getRatingBySeriesIdAndUserId(seriesId, req.user.id);
+  }
+  const ratingAVG = getAVGRatingBySeriesId(seriesId);
   res.json({
     series: data,
     genres,
     seasons,
+    ratings,
+    ratingAVG,
   });
 });
 

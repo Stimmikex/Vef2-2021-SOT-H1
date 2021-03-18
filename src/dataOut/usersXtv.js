@@ -52,13 +52,24 @@ export async function checkRatingBySeriesId(id) {
   return false;
 }
 
-export async function getRatingBySeriesId(id) {
-  const q = 'SELECT * FROM users WHERE series = $1';
+export async function getRatingBySeriesIdAndUserId(id, userId) {
+  const q = 'SELECT status, rating FROM seriesUser WHERE series_id = $1 AND user_id = $2';
+  let result = '';
+  try {
+    result = await query(q, [id, userId]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows[0];
+}
+
+export async function getAVGRatingBySeriesId(id) {
+  const q = 'SELECT AVG(rating)::numeric(10,2) FROM seriesUser WHERE series_id = $1';
   let result = '';
   try {
     result = await query(q, [id]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
-  return result.rows;
+  return result.rows[0];
 }
