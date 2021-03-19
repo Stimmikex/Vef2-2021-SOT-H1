@@ -24,6 +24,8 @@ import {
 
 import { requireAdminAuthentication } from '../dataOut/login.js';
 
+import { imgUpload } from '../dataOut/utils.js';
+
 export const routerTV = express.Router();
 
 /**
@@ -69,11 +71,13 @@ routerTV.get('/tv', async (req, res) => {
 
 // eslint-disable-next-line no-unused-vars
 routerTV.post('/tv', requireAdminAuthentication, async(req, res) => {
-  const data = req.body;
-  await makeSeries(data);
+  let dataman = req.body;
+  let cloudinaryURL = await imgUpload('./data/img/provo.png');
+  dataman.image = cloudinaryURL;
+  await makeSeries(dataman);
   console.info('Data added');
-  //breyta þessu res seinna
-  res.json(data);
+  
+  res.json(dataman);
 });
 
 /**

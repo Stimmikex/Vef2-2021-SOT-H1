@@ -48,8 +48,8 @@ export async function makeSeries(data) {
   try {
     await query(q, [
       data.name,
-      data.airDate,
-      data.inProduction,
+      data.airdate,
+      data.works,
       data.tagline,
       data.image,
       data.description,
@@ -103,7 +103,7 @@ export async function updateSeriesByID(data, id) {
   const newData = {
     name: data.name || currentData.name,
     airdate: data.airdate || currentData.airdate,
-    inProduction: data.works || currentData.works,
+    works: data.works || currentData.works,
     tagline: data.tagline || currentData.tagline,
     image: data.image || currentData.image,
     description: data.description || currentData.description,
@@ -116,7 +116,7 @@ export async function updateSeriesByID(data, id) {
     await query(q, [
       newData.name,
       newData.airdate,
-      newData.inProduction,
+      newData.works,
       newData.tagline,
       newData.image,
       newData.description,
