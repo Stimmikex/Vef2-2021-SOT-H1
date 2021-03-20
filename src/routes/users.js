@@ -63,7 +63,9 @@ routerUsers.post('/users/register',
       });
     }
 
-    return res.json({ error: 'Error registering' });
+    return res.json({
+      error: 'Error registering',
+    });
   });
 
 routerUsers.post('/users/login',
@@ -192,7 +194,7 @@ routerUsers.patch('/users/:id', requireAdminAuthentication, async (req, res) => 
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const id = req.params.id;
+  const { id } = req.params;
   const xssId = xss(id);
   const data = await upgradeUser(xssId);
   if (data) return res.json(data);
