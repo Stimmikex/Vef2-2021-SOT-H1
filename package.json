@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
+    "cloudinary": "^1.25.0",
     "csv-parser": "^3.0.0",
     "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",

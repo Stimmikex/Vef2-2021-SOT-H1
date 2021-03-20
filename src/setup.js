@@ -1,5 +1,6 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 import { promises as fs } from 'fs';
 import { insertSeries, insertSeasons, insertEpisodes} from './csvReader/reader.js';
 
@@ -69,6 +70,14 @@ async function main() {
     console.info('added episodes');
   } catch (error) {
     console.error("Villa kom upp við að setja gögn í gagnagrunnin; " + error);
+  }
+
+  try {
+    const q = `INSERT INTO users(name, email, password, role) VALUES ($1, $2, $3, $4)`;
+    const Password = await bcrypt.hash('123', 10)
+    await query(q, ['admin', 'admin@admin.is', Password, true]);
+  } catch (error) {
+    console.error('Villa við að búa til notenda');
   }
 }
 

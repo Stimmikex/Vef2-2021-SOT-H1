@@ -1,7 +1,16 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
+import { v2 as cloudinary } from 'cloudinary';
+import e from 'express';
 
 dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -28,6 +37,20 @@ export async function query(q, values = []) {
   return result;
 }
 
+<<<<<<< HEAD
 export async function sanitizeInput(input, type) {
   
+=======
+export async function imgUpload(image) {
+  let result = await cloudinary.uploader.upload(image, {public_id:"h1/test", overwrite: true},
+  function(error) 
+  {
+    if (error) {console.error(error);}
+    else {
+      console.info('Image uploaded');
+    }
+  });
+
+  return result.secure_url;
+>>>>>>> tvShows-router
 }

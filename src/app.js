@@ -27,7 +27,8 @@ const sessionSecret = 'leyndarmál';
 
 // Erum að vinna með form, verðurm að nota body parser til að fá aðgang
 // að req.body
-app.use(express.urlencoded({ extended: true }));
+//app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Passport mun verða notað með session
 app.use(session({

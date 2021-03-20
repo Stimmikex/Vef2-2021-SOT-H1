@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS seasons CASCADE;
 DROP TABLE IF EXISTS episodes CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS episodeUser CASCADE;
+DROP TABLE IF EXISTS seriesUser CASCADE;
 
 CREATE TABLE IF NOT EXISTS series (
 	id serial primary key,
@@ -63,7 +64,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS seriesUser (
 	id serial primary key,
-	status character varying(255) NOT NULL,
+	status character varying(255),
 	rating INTEGER,
 	series_id INTEGER,
 	user_id INTEGER,
