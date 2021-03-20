@@ -27,15 +27,15 @@ export async function updateRating(rating, series, user) {
 }
 
 export async function deleteRating(series, user) {
-    const q =
-        `UPDATE seriesuser SET rating = null WHERE series_id = $1 AND user_id = $2`;
-    let result;
-    try {
-        result = await query(q, [series, user]);
-    } catch(e) {
-        console.info('Error occured :>> ', e);
-    }
-    return true;
+  const q =
+    `UPDATE seriesuser SET rating = null WHERE series_id = $1 AND user_id = $2`;
+  let result;
+  try {
+    result = await query(q, [series, user]);
+  } catch(e) {
+    console.info('Error occured :>> ', e);
+  }
+  return true;
 }
 
 export async function addState(status, series, user) {
@@ -66,21 +66,16 @@ export async function updateState(status, series, user) {
 }
 
 export async function deleteState(series, user) {
-    const q =
-        `UPDATE seriesuser SET status
-         = null WHERE series_id = $1 AND user_id = $2`;
-    let result;
-    try {
-        result = await query(q, [series, user]);
-    } catch(e) {
-        console.info('Error occured :>> ', e);
-    }
-    return true;
-}
-
-<<<<<<< HEAD
-export async function getStateAndRating() {
-  
+  const q =
+      `UPDATE seriesuser SET status
+        = null WHERE series_id = $1 AND user_id = $2`;
+  let result;
+  try {
+    result = await query(q, [series, user]);
+  } catch(e) {
+    console.info('Error occured :>> ', e);
+  }
+  return true;
 }
 
 export async function checkRatingBySeriesId(id) {
@@ -118,7 +113,6 @@ export async function getAVGRatingBySeriesId(id) {
   }
   return result.rows[0];
 }
-=======
 export async function getStateAndRating(series, user) {
     const q = `SELECT * FROM seriesuser
                WHERE series_id = $1 AND user_id = $2`;
@@ -131,4 +125,3 @@ export async function getStateAndRating(series, user) {
 
     return result.rows[0];
 }
->>>>>>> tvShows-router

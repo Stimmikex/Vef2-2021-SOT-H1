@@ -13,6 +13,7 @@ import {
   deleteRating,
   deleteState,
   getStateAndRating,
+// eslint-disable-next-line import/named
 } from '../dataOut/usersXtv.js';
 
 import { requireAuthentication } from '../dataOut/login.js';

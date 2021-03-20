@@ -37,10 +37,6 @@ export async function query(q, values = []) {
   return result;
 }
 
-<<<<<<< HEAD
-export async function sanitizeInput(input, type) {
-  
-=======
 export async function imgUpload(image) {
   let result = await cloudinary.uploader.upload(image, {public_id:"h1/test", overwrite: true},
   function(error) 
@@ -52,5 +48,4 @@ export async function imgUpload(image) {
   });
 
   return result.secure_url;
->>>>>>> tvShows-router
 }
