@@ -11,8 +11,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-
-const connectionString = process.env.DATABASE_URL;
+const {
+  DATABASE_URL: connectionString,
+  NODE_ENV: nodeEnv = 'development',
+} = process.env;
 
 const ssl = nodeEnv !== 'development' ? { rejectUnauthorized: false } : false;
 
