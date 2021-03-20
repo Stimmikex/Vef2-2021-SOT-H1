@@ -161,7 +161,7 @@ routerTV.get('/tv/:seriesId?/season', async (req, res) => {
     limit,
     offset,
     data,
-    links
+    links,
   });
 });
 
@@ -188,8 +188,8 @@ routerTV.get('/tv/:seriesId?/season/:seasonId?', async (req, res) => {
     airdate: dataman.airdate,
     overview: dataman.overview,
     poster: dataman.poster,
-    episode: await getEpisodesBySeasonId(dataman.id)
-  }
+    episode: await getEpisodesBySeasonId(dataman.id),
+  };
   res.json(info);
 });
 

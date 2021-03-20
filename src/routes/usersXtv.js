@@ -22,83 +22,129 @@ export const routerUserXtv = express.Router();
 /**
  * /tv/:seriesId?/rate
  */
-routerUserXtv.post('/tv/:seriesId?/rate', requireAuthentication, async (req, res) => {
-  const data = req.body;
-  const { seriesId } = req.params;
-  let rowExists = await getStateAndRating(seriesId, req.user.id);
-  if(rowExists) {
-    await updateRating(data.rating, seriesId, req.user.id);
-  } else {
-    await addRating(data.rating, seriesId, req.user.id);
-  }
-  console.info('Rating has benn added');
-  res.json({
-    rating: data.rating,
-    series: seriesId,
-    user: req.user.id
-  })
-});
+routerUserXtv.post('/tv/:seriesId?/rate', requireAuthentication,
+  params('seriesId'),
+  body('rating')
+    .isNumeric({ min: 0, max: 5 })
+    .withMessage('rating need to be 0 to 5'),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { rating } = req.body;
+    const xssRating = xss(rating);
+    const { seriesId } = req.params;
+    const xssSeriesId = xss(seriesId);
+    const rowExists = await getStateAndRating(xssSeriesId, req.user.id);
+    if (rowExists) {
+      await updateRating(xssRating, xssSeriesId, req.user.id);
+    } else {
+      await addRating(xssRating, xssSeriesId, req.user.id);
+    }
+    return res.json({
+      rating: xssRating,
+      series: xssSeriesId,
+      user: req.user.id,
+    });
+  });
 
-routerUserXtv.patch('/tv/:seriesId?/rate', requireAuthentication, async (req, res) => {
-  const data = req.body;
-  const { seriesId } = req.params;
-  await updateRating(data.rating, seriesId, req.user.id);
-  console.info('update Rating');
-  res.json({
-    rating: data.rating,
-    series: seriesId,
-    user: req.user.id
-  })
-});
+routerUserXtv.patch('/tv/:seriesId?/rate', requireAuthentication,
+  params('seriesId'),
+  body('rating')
+    .isNumeric({ min: 0, max: 5 })
+    .withMessage('rating need to be 0 to 5'),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { rating } = req.body;
+    const xssRating = xss(rating);
+    const { seriesId } = req.params;
+    const xssSeriesId = xss(seriesId);
+    await updateRating(xssRating, xssSeriesId, req.user.id);
+    return res.json({
+      rating: xssRating,
+      series: xssSeriesId,
+      user: req.user.id,
+    });
+  });
 
-routerUserXtv.delete('/tv/:seriesId?/rate', requireAuthentication, async (req, res) => {
-  const { seriesId } = req.params;
-  await deleteRating(seriesId, req.user.id);
-  console.info('delete Rating');
-  res.json({
-    series: seriesId,
-    user: req.user.id
-  })
-});
+routerUserXtv.delete('/tv/:seriesId?/rate', requireAuthentication,
+  params('seriesId'),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { seriesId } = req.params;
+    const xssSeriesId = xss(seriesId);
+    await deleteRating(xssSeriesId, req.user.id);
+    return res.json({
+      series: xssSeriesId,
+      user: req.user.id,
+    });
+  });
 
 /**
  * /tv/:seriesId?/state
  */
-routerUserXtv.post('/tv/:seriesId?/state', requireAuthentication, async (req, res) => {
-  const data = req.body;
-  const { seriesId } = req.params;
-  const rowExists = await getStateAndRating(seriesId, req.user.id);
-  if(rowExists) {
-    await updateState(data.status, seriesId, req.user.id);
-  } else {
-    await addState(data.status, seriesId, req.user.id);
-  }
-  console.info('state added');
-  res.json({
-    status: data.status,
-    series: seriesId,
-    user: req.user.id
-  })
-});
+routerUserXtv.post('/tv/:seriesId?/state', requireAuthentication,
+  params('seriesId'),
+  body('status')
+    .isNumeric({ min: 0, max: 256 })
+    .withMessage('status need to be 0 to 256'),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { status } = req.body;
+    const xssStatus = xss(status);
+    const { seriesId } = req.params;
+    const xssSeriesId = xss(seriesId);
+    const rowExists = await getStateAndRating(xssSeriesId, req.user.id);
+    if (rowExists) {
+      await updateState(xssStatus, xssSeriesId, req.user.id);
+    } else {
+      await addState(xssStatus, xssSeriesId, req.user.id);
+    }
+    return res.json({
+      status: xssStatus,
+      series: xssSeriesId,
+      user: req.user.id,
+    });
+  });
 
-routerUserXtv.patch('/tv/:seriesId?/state', requireAuthentication, async (req, res) => {
-  const data = req.body;
-  const { seriesId } = req.params;
-  await updateState(data.status, seriesId, req.user.id);
-  console.info('update state');
-  res.json({
-    status: data.status,
-    series: seriesId,
-    user: req.user.id
-  })
-});
+routerUserXtv.patch('/tv/:seriesId?/state', requireAuthentication,
+  params('seriesId'),
+  body('status')
+    .isNumeric({ min: 0, max: 256 })
+    .withMessage('status need to be 0 to 256'),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { status } = req.body;
+    const xssStatus = xss(status);
+    const { seriesId } = req.params;
+    const xssSeriesId = xss(seriesId);
+    await updateState(xssStatus, xssSeriesId, req.user.id);
+    return res.json({
+      status: xssStatus,
+      series: xssSeriesId,
+      user: req.user.id,
+    });
+  });
 
 routerUserXtv.delete('/tv/:seriesId?/state', requireAuthentication, async (req, res) => {
   const { seriesId } = req.params;
-  await deleteState(seriesId, req.user.id);
-  console.info('delete state');
+  const xssSeriesId = xss(seriesId);
+  await deleteState(xssSeriesId, req.user.id);
   res.json({
-    series: seriesId,
-    user: req.user.id
-  })
+    series: xssSeriesId,
+    user: req.user.id,
+  });
 });
