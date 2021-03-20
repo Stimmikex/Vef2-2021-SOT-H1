@@ -6,6 +6,7 @@ import {
   updateRating,
   deleteRating,
   deleteState,
+  getStateAndRating,
 } from '../dataOut/usersXtv.js';
 
 import { requireAuthentication } from '../dataOut/login.js';
@@ -13,48 +14,85 @@ import { requireAuthentication } from '../dataOut/login.js';
 export const routerUserXtv = express.Router();
 
 /**
- * /tv/:data?/rate
+ * /tv/:seriesId?/rate
  */
 routerUserXtv.post('/tv/:seriesId?/rate', requireAuthentication, async (req, res) => {
   const data = req.body;
   const { seriesId } = req.params;
-  await addRating(data.rating, seriesId, req.user.id);
+  let rowExists = await getStateAndRating(seriesId, req.user.id);
+  if(rowExists) {
+    await updateRating(data.rating, seriesId, req.user.id);
+  } else {
+    await addRating(data.rating, seriesId, req.user.id);
+  }
   console.info('Rating has benn added');
+  res.json({
+    rating: data.rating,
+    series: seriesId,
+    user: req.user.id
+  })
 });
 
-routerUserXtv.patch('/tv/:data?/rate', requireAuthentication, async (req, res) => {
+routerUserXtv.patch('/tv/:seriesId?/rate', requireAuthentication, async (req, res) => {
   const data = req.body;
   const { seriesId } = req.params;
   await updateRating(data.rating, seriesId, req.user.id);
   console.info('update Rating');
+  res.json({
+    rating: data.rating,
+    series: seriesId,
+    user: req.user.id
+  })
 });
 
-routerUserXtv.delete('/tv/:data?/rate', requireAuthentication, async (req, res) => {
+routerUserXtv.delete('/tv/:seriesId?/rate', requireAuthentication, async (req, res) => {
   const { seriesId } = req.params;
-  deleteRating(seriesId, req.user.id);
+  await deleteRating(seriesId, req.user.id);
   console.info('delete Rating');
+  res.json({
+    series: seriesId,
+    user: req.user.id
+  })
 });
 
 /**
- * /tv/:data?/state
+ * /tv/:seriesId?/state
  */
-routerUserXtv.post('/tv/:data?/state', requireAuthentication, async (req, res) => {
+routerUserXtv.post('/tv/:seriesId?/state', requireAuthentication, async (req, res) => {
   const data = req.body;
   const { seriesId } = req.params;
-  addState(data.rating, seriesId, req.user.id);
+  let rowExists = await getStateAndRating(seriesId, req.user.id);
+  if(rowExists) {
+    await updateState(data.status, seriesId, req.user.id);
+  } else {
+    await addState(data.status, seriesId, req.user.id);
+  }
   console.info('state added');
+  res.json({
+    status: data.status,
+    series: seriesId,
+    user: req.user.id
+  })
 });
 
-routerUserXtv.patch('/tv/:data?/state', requireAuthentication, async (req, res) => {
+routerUserXtv.patch('/tv/:seriesId?/state', requireAuthentication, async (req, res) => {
   const data = req.body;
   const { seriesId } = req.params;
-  updateState(data.rating, seriesId, req.user.id);
+  await updateState(data.status, seriesId, req.user.id);
   console.info('update state');
+  res.json({
+    status: data.status,
+    series: seriesId,
+    user: req.user.id
+  })
 });
 
-routerUserXtv.delete('/tv/:data?/state', requireAuthentication, async (req, res) => {
-  const data = req.body;
+routerUserXtv.delete('/tv/:seriesId?/state', requireAuthentication, async (req, res) => {
   const { seriesId } = req.params;
-  deleteState(data.rating, seriesId, req.user.id);
+  await deleteState(seriesId, req.user.id);
   console.info('delete state');
+  res.json({
+    series: seriesId,
+    user: req.user.id
+  })
 });

@@ -16,7 +16,7 @@ export async function getSeriesCount() {
  * @returns shows from database
  */
 export async function getSeries(offset, limit) {
-  const q = 'SELECT * FROM series ORDER BY id ASC OFFSET $1 LIMIT $2';
+  const q = `SELECT * FROM series ORDER BY id ASC OFFSET $1 LIMIT $2`;
   let result = '';
   try {
     result = await query(q, [offset, limit]);
@@ -100,16 +100,20 @@ export async function updateSeriesByID(data, id) {
   `;
   const currentData = await getSeriesByID(id);
 
-  const newData = {
+  let newData = {
     name: data.name || currentData.name,
     airdate: data.airdate || currentData.airdate,
-    works: data.works || currentData.works,
+    works: currentData.works,
     tagline: data.tagline || currentData.tagline,
     image: data.image || currentData.image,
     description: data.description || currentData.description,
     language: data.language || currentData.language,
     network: data.network || currentData.network,
     homepage: data.homepage || currentData.homepage,
+  }
+
+  if(data.works != null) {
+    newData.works = data.works;
   }
 
   try {
@@ -144,6 +148,18 @@ export async function deleteSeriesByID(id) {
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
+}
+
+export async function getSeasonsCount(seriesId) {
+  const q = `SELECT COUNT(*) AS count 
+             FROM seasons WHERE series_id = $1`;
+  let result = '';
+  try {
+    result = await query(q, [seriesId]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows[0];
 }
 
 export async function getSeasons() {
@@ -214,11 +230,13 @@ export async function getSeasonBySeriesIdAndNumber(seriesId, season) {
   return result.rows[0];
 }
 
-export async function getSeasonBySeriesId(id) {
-  const q = 'SELECT * FROM seasons WHERE series_id = $1';
+export async function getSeasonBySeriesId(id, offset, limit) {
+  const q = `SELECT id, name, number, airdate, overview, poster 
+             FROM seasons WHERE series_id = $1 ORDER BY number ASC
+             OFFSET $2 LIMIT $3`;
   let result = '';
   try {
-    result = await query(q, [id]);
+    result = await query(q, [id, offset, limit]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }

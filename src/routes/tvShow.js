@@ -6,6 +6,7 @@ import {
   getSeasonByID,
   getGenres,
   getSeasons,
+  getSeasonsCount,
   getEpisodeById,
   getSeasonBySeriesId,
   getSeasonBySeriesIdAndNumber,
@@ -47,13 +48,11 @@ routerTV.get('/tv', async (req, res) => {
     next: null,
     prev: null
   };
-
   if(offset + 10 < count.count) {
     links.next = {
       href: `http://localhost:4000/tv?offset=${offset+10}&limit=10`
     };
   }
-
   if(offset - 10 >= 0) {
     links.prev = {
       href: `http://localhost:4000/tv?offset=${offset-10}&limit=10`
@@ -76,7 +75,7 @@ routerTV.post('/tv', requireAdminAuthentication, async(req, res) => {
   dataman.image = cloudinaryURL;
   await makeSeries(dataman);
   console.info('Data added');
-  
+
   res.json(dataman);
 });
 
@@ -98,10 +97,12 @@ routerTV.get('/tv/:seriesId?', async (req, res) => {
 routerTV.patch('/tv/:seriesId?', requireAdminAuthentication, async (req, res) => {
   const { seriesId } = req.params;
   const data = req.body;
+  console.log(data);
   await updateSeriesByID(data, seriesId);
   console.info('Data added');
+  const info = await getSeriesByID(seriesId);
   //breyta þessu res seinna
-  res.json(data);
+  res.json(info);
 });
 
 routerTV.delete('/tv/:seriesId?', requireAdminAuthentication, async (req, res) => {
@@ -116,9 +117,38 @@ routerTV.delete('/tv/:seriesId?', requireAdminAuthentication, async (req, res) =
  * /tv/:data?/season/
  */
 routerTV.get('/tv/:seriesId?/season', async (req, res) => {
+  let { offset = 0, limit = 10 } = req.query;
+  offset = Number(offset);
+  limit = Number(limit);
+
   const { seriesId } = req.params;
-  const data = await getSeasonBySeriesId(seriesId);
-  res.json(data);
+
+  const count = await getSeasonsCount(seriesId);
+
+  let links = {
+    self: {
+      href: `http://localhost:4000/tv?offset=${offset}&limit=10`
+    }
+  };
+  if(offset + 10 < count.count) {
+    links.next = {
+      href: `http://localhost:4000/tv?offset=${offset+10}&limit=10`
+    };
+  }
+  if(offset - 10 >= 0) {
+    links.prev = {
+      href: `http://localhost:4000/tv?offset=${offset-10}&limit=10`
+    };
+  }
+
+  const data = await getSeasonBySeriesId(seriesId, offset, limit);
+
+  res.json({
+    limit,
+    offset,
+    data,
+    links
+  });
 });
 
 routerTV.post('/tv/:seriesId?/season', requireAdminAuthentication, async (req, res) => {
