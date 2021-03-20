@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
 import { query } from './utils.js';
+import xss from 'xss';
+import { body, validationResult } from 'express-validator';
 
 export async function getUsers() {
   const q = 'SELECT name, email, role FROM users';
