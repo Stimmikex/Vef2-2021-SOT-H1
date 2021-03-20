@@ -30,16 +30,16 @@ routerUsers.post('/users/register',
   body('username')
     .trim()
     .isLength({ min: 1, max: 256 })
-    .withMessage('username need to be 10 to 256'),
+    .withMessage('username is required'),
   body('email')
     .trim()
     .isEmail()
-    .withMessage('email is needed')
+    .withMessage('email is required')
     .normalizeEmail(),
   body('password')
     .trim()
-    .isLength({ min: 10, max: 256 })
-    .withMessage('password need to be 10 to 256'),
+    .isLength({ min: 1, max: 256 })
+    .withMessage('Password is required'),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -72,11 +72,11 @@ routerUsers.post('/users/login',
   body('username')
     .trim()
     .isLength({ min: 1, max: 256 })
-    .withMessage('username need to be 10 to 256'),
+    .withMessage('username is required'),
   body('password')
     .trim()
-    .isLength({ min: 10, max: 256 })
-    .withMessage('password need to be 10 to 256'),
+    .isLength({ min: 1, max: 256 })
+    .withMessage('Password is required'),
   async (req, res) => {
     const errors = validationResult(req);
 
@@ -130,12 +130,12 @@ routerUsers.get('/users/me',
 routerUsers.patch('/users/me', requireAuthentication,
   body('password')
     .if(body('password').exists())
-    .isLength({ min: 10, max: 256 })
-    .withMessage('password need to be 10 to 256'),
+    .isLength({ min: 1, max: 256 })
+    .withMessage('Password is required'),
   body('email')
     .if(body('email').exists())
     .isEmail()
-    .withMessage('email must exist')
+    .withMessage('email is required, max 256 characters')
     .normalizeEmail(),
   // eslint-disable-next-line consistent-return
   async (req, res) => {
