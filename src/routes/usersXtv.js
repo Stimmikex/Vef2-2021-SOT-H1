@@ -2,7 +2,7 @@ import express from 'express';
 import xss from 'xss';
 import {
   body,
-  params,
+  param,
   validationResult,
 } from 'express-validator';
 import {
@@ -24,7 +24,10 @@ export const routerUserXtv = express.Router();
  * /tv/:seriesId?/rate
  */
 routerUserXtv.post('/tv/:seriesId?/rate', requireAuthentication,
-  params('seriesId'),
+  param('seriesId')
+    .isInt()
+    .custom((value) => value > 0)
+    .withMessage('must be an integer larger than 0'),
   body('rating')
     .isNumeric({ min: 0, max: 5 })
     .withMessage('rating need to be 0 to 5'),
@@ -51,7 +54,10 @@ routerUserXtv.post('/tv/:seriesId?/rate', requireAuthentication,
   });
 
 routerUserXtv.patch('/tv/:seriesId?/rate', requireAuthentication,
-  params('seriesId'),
+  param('seriesId')
+    .isInt()
+    .custom((value) => value > 0)
+    .withMessage('must be an integer larger than 0'),
   body('rating')
     .isNumeric({ min: 0, max: 5 })
     .withMessage('rating need to be 0 to 5'),
@@ -73,7 +79,10 @@ routerUserXtv.patch('/tv/:seriesId?/rate', requireAuthentication,
   });
 
 routerUserXtv.delete('/tv/:seriesId?/rate', requireAuthentication,
-  params('seriesId'),
+  param('seriesId')
+    .isInt()
+    .custom((value) => value > 0)
+    .withMessage('must be an integer larger than 0'),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -92,7 +101,10 @@ routerUserXtv.delete('/tv/:seriesId?/rate', requireAuthentication,
  * /tv/:seriesId?/state
  */
 routerUserXtv.post('/tv/:seriesId?/state', requireAuthentication,
-  params('seriesId'),
+  param('seriesId')
+    .isInt()
+    .custom((value) => value > 0)
+    .withMessage('must be an integer larger than 0'),
   body('status')
     .isNumeric({ min: 0, max: 256 })
     .withMessage('status need to be 0 to 256'),
@@ -119,7 +131,10 @@ routerUserXtv.post('/tv/:seriesId?/state', requireAuthentication,
   });
 
 routerUserXtv.patch('/tv/:seriesId?/state', requireAuthentication,
-  params('seriesId'),
+  param('seriesId')
+    .isInt()
+    .custom((value) => value > 0)
+    .withMessage('must be an integer larger than 0'),
   body('status')
     .isNumeric({ min: 0, max: 256 })
     .withMessage('status need to be 0 to 256'),
@@ -140,12 +155,17 @@ routerUserXtv.patch('/tv/:seriesId?/state', requireAuthentication,
     });
   });
 
-routerUserXtv.delete('/tv/:seriesId?/state', requireAuthentication, async (req, res) => {
-  const { seriesId } = req.params;
-  const xssSeriesId = xss(seriesId);
-  await deleteState(xssSeriesId, req.user.id);
-  res.json({
-    series: xssSeriesId,
-    user: req.user.id,
+routerUserXtv.delete('/tv/:seriesId?/state', requireAuthentication,
+  param('seriesId')
+    .isInt()
+    .custom((value) => value > 0)
+    .withMessage('must be an integer larger than 0'),
+  async (req, res) => {
+    const { seriesId } = req.params;
+    const xssSeriesId = xss(seriesId);
+    await deleteState(xssSeriesId, req.user.id);
+    res.json({
+      series: xssSeriesId,
+      user: req.user.id,
+    });
   });
-});
