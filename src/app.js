@@ -11,6 +11,7 @@ dotenv.config();
 const {
   DATABASE_URL: connectionString,
   NODE_ENV: nodeEnv = 'development',
+  PORT: port = 4000,
 } = process.env;
 
 if (!connectionString) {
@@ -153,9 +154,7 @@ app.get('/', async (req, res) => {
 app.use(routerUsers);
 app.use(routerTV);
 app.use(routerUserXtv);
-
-const port = 4000;
-
-app.listen(port, () => {
-  console.info(`Server running at http://127.0.0.1:${port}/`);
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.info(`Server running at http://127.0.0.1:${PORT}/`);
 });
