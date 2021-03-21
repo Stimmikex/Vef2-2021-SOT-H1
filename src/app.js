@@ -11,6 +11,7 @@ dotenv.config();
 const {
   DATABASE_URL: connectionString,
   NODE_ENV: nodeEnv = 'development',
+  PORT: port = 4000,
 } = process.env;
 
 if (!connectionString) {
@@ -31,12 +32,12 @@ const sessionSecret = 'leyndarmál';
 app.use(express.json());
 
 // Passport mun verða notað með session
-app.use(session({
-  secret: sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-  maxAge: 20 * 1000, // 20 sek
-}));
+// app.use(session({
+//   secret: sessionSecret,
+//   resave: false,
+//   saveUninitialized: false,
+//   maxAge: 20 * 1000, // 20 sek
+// }));
 
 app.get('/', async (req, res) => {
   res.json({
@@ -153,9 +154,7 @@ app.get('/', async (req, res) => {
 app.use(routerUsers);
 app.use(routerTV);
 app.use(routerUserXtv);
-
-const port = 4000;
-
-app.listen(port, () => {
-  console.info(`Server running at http://127.0.0.1:${port}/`);
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.info(`Server running at http://127.0.0.1:${PORT}/`);
 });
