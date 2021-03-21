@@ -191,7 +191,6 @@ export async function insertGenres() {
     .pipe(csv())
     .on('data', async (row) => {
       await initGenres(row.genres);
-      console.info(row.genres);
     })
     .on('end', () => {
       console.info('genres inserted');

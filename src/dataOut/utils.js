@@ -45,9 +45,7 @@ export async function imgUpload(image, name) {
   path = path.slice(0, -4);
   const result = await cloudinary.uploader.upload(image, { public_id: path, overwrite: true },
     (error) => {
-      if (error) { console.error(error); } else {
-        console.info('Image uploaded');
-      }
+      if (error) { console.error(error); }
     });
 
   return result.secure_url;
