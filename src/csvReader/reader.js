@@ -1,7 +1,7 @@
 import csv from 'csv-parser';
 import fs from 'fs';
 
-import { query } from '../dataOut/utils.js';
+import { query, imgUpload } from '../dataOut/utils.js';
 
 import { getSeasonBySeriesIdAndNumber } from '../dataOut/tvshows.js';
 
@@ -36,6 +36,10 @@ export async function initSeries(data) {
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   `;
 
+  const path = './data/img/' + data.image;
+  console.log(path);
+  console.log(data.image);
+  const cloudinaryURL = await imgUpload(path, data.image);
   try {
     await query(q, [
       data.name,
