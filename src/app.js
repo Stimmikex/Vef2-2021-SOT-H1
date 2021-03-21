@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import session from 'express-session';
+// import session from 'express-session';
 
 import { routerUsers } from './routes/users.js';
 import { routerTV } from './routes/tvShow.js';
@@ -10,8 +10,6 @@ dotenv.config();
 
 const {
   DATABASE_URL: connectionString,
-  NODE_ENV: nodeEnv = 'development',
-  PORT: port = 4000,
 } = process.env;
 
 if (!connectionString) {
@@ -19,16 +17,13 @@ if (!connectionString) {
   process.exit(1);
 }
 
-const ssl = nodeEnv !== 'development' ? { rejectUnauthorized: false } : false;
-
 const app = express();
 
 // Það sem verður notað til að dulkóða session gögnin
-const sessionSecret = 'leyndarmál';
+// const sessionSecret = 'leyndarmál';
 
 // Erum að vinna með form, verðurm að nota body parser til að fá aðgang
 // að req.body
-//app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Passport mun verða notað með session
