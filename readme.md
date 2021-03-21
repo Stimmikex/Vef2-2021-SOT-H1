@@ -1,6 +1,127 @@
 # Vefforritun 2, 2021, hópverkefni 1
+# Notenda Upplýsingar:
+## Upplýsingar um keyrslu:
+  * npm run setup: fyrir keyrslu á gagnagrunni
+  * npm run start: fyrir keyrslu á verkefni
+  * mælt er með því að keyra npm run setup áður en það er keyrt npm run start
+## köll í vefþjónustu:
+    tv: {
+      series: {
+        href: '/tv',
+        methods: [
+          'GET',
+          'POST',
+        ],
+      },
+      serie: {
+        href: '/tv/{id}',
+        methods: [
+          'GET',
+          'PATCH',
+          'DELETE',
+        ],
+      },
+      rate: {
+        href: '/tv/{id}/rate',
+        methods: [
+          'POST',
+          'PATCH',
+          'DELETE',
+        ],
+      },
+      state: {
+        href: '/tv/{id}/state',
+        methods: [
+          'POST',
+          'PATCH',
+          'DELETE',
+        ],
+      },
+    },
+    seasons: {
+      seasons: {
+        href: '/tv/{id}/season',
+        methods: [
+          'GET',
+          'POST',
+        ],
+      },
+      season: {
+        href: '/tv/{id}/season/{season}',
+        methods: [
+          'GET',
+          'DELETE',
+        ],
+      },
+    },
+    episodes: {
+      episodes: {
+        href: '/tv/{id}/season/{season}/episode',
+        methods: [
+          'POST',
+        ],
+      },
+      episode: {
+        href: '/tv/{id}/season/{season}/episode/{episode}',
+        methods: [
+          'GET',
+          'DELETE',
+        ],
+      },
+    },
+    genres: {
+      genres: {
+        href: '/genres',
+        methods: [
+          'GET',
+          'POST',
+        ],
+      },
+    },
+    users: {
+      users: {
+        href: '/users',
+        methods: [
+          'GET',
+        ],
+      },
+      user: {
+        href: '/users/{id}',
+        methods: [
+          'GET',
+          'PATCH',
+        ],
+      },
+      register: {
+        href: '/users/register',
+        methods: [
+          'POST',
+        ],
+      },
+      login: {
+        href: '/users/login',
+        methods: [
+          'POST',
+        ],
+      },
+      me: {
+        href: '/users/me',
+        methods: [
+          'GET',
+          'PATCH',
+        ],
+      },
+    },
+## Skráðir Notendur:
+  * notandi admin: username: admin, password: 123
+  * notandi venjulegur: username: dummy1, password: 0123456789
 
-Útfæra skal vefþjónustur fyrir sjónvarpsþáttavef:
+## Hópur:
+  * Marzuk (mil4@hi.is)
+  * Mikolaj (mik5@hi.is)
+  * Styrmir Óli (sot13@hi.is)
+
+# Útfæra skal vefþjónustur fyrir sjónvarpsþáttavef:
 
 * Gefin eru/verða gögn fyrir sjónvarpsþætti, season og staka þætti sem flytja þarf inn í gagnagrunn
 * Hægt er að skoða öll gögn um sjónvarpsþætti án innskráningar

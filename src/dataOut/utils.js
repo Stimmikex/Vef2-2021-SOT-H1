@@ -48,5 +48,5 @@ export async function imgUpload(image) {
       }
     });
 
-  return result.secure_url;
+  //return result.secure_url;
 }

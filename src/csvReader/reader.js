@@ -2,7 +2,7 @@ import csv from 'csv-parser';
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 
-import { query } from '../dataOut/utils.js';
+import { query, imgUpload } from '../dataOut/utils.js';
 
 import { getSeasonBySeriesIdAndNumber } from '../dataOut/tvshows.js';
 

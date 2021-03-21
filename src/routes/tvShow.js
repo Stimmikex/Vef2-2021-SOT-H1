@@ -187,7 +187,7 @@ routerTV.patch('/tv/:seriesId?', requireAdminAuthentication,
     }
     const { seriesId } = req.params;
     const xssSeriesId = xss(seriesId);
-    const seriesExists = getSeriesByID(xssSeriesId);
+    const seriesExists = await getSeriesByID(xssSeriesId);
     const data = req.body;
     if (seriesExists) {
       await updateSeriesByID(data, xssSeriesId);
@@ -197,7 +197,7 @@ routerTV.patch('/tv/:seriesId?', requireAdminAuthentication,
         msg: 'Has been updated',
       });
     }
-    return res.status(400).json({ err: 'Cannot create series' });
+    return res.status(400).json({ err: 'Cannot update series, seriesId not found' });
   });
 
 routerTV.delete('/tv/:seriesId?', requireAdminAuthentication,
@@ -212,7 +212,7 @@ routerTV.delete('/tv/:seriesId?', requireAdminAuthentication,
     }
     const { seriesId } = req.params;
     const xssSeriesId = xss(seriesId);
-    const seriesExists = getSeriesByID(xssSeriesId);
+    const seriesExists = await getSeriesByID(xssSeriesId);
     if (seriesExists) {
       await deleteSeriesByID(xssSeriesId);
       return res.json({
@@ -220,7 +220,7 @@ routerTV.delete('/tv/:seriesId?', requireAdminAuthentication,
         msg: 'Data has been deleted',
       });
     }
-    return res.status(400).json({ err: 'Cannot delete series' });
+    return res.status(400).json({ err: 'Cannot delete series, seriesId not found' });
   });
 
 /**
@@ -288,17 +288,15 @@ routerTV.post('/tv/:seriesId?/season', requireAdminAuthentication,
     const { seriesId } = req.params;
     const xssSeriesId = xss(seriesId);
     const data = req.body;
-    const xssData = xss(data);
-    const seriesExists = getSeriesByID(xssSeriesId);
-    await makeSeason(xssData, xssSeriesId);
+    const seriesExists = await getSeriesByID(xssSeriesId);
     if (seriesExists) {
-      await deleteSeriesByID(xssSeriesId);
+      await makeSeason(data, xssSeriesId);
       return res.json({
         data,
         msg: 'season has been added',
       });
     }
-    return res.status(400).json({ err: 'Cannot create season' });
+    return res.status(400).json({ err: 'Cannot create season, seriesId not found' });
   });
 
 /**
@@ -350,9 +348,10 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?', requireAdminAuthentication,
     }
     const { seriesId, seasonId } = req.params;
     const xssSeriesId = xss(seriesId);
-    const seriesExists = getSeriesByID(xssSeriesId);
+    const seriesExists = await getSeriesByID(xssSeriesId);
     const xssSeasonId = xss(seasonId);
-    const seasonsExists = getSeasonBySeriesId(xssSeriesId);
+    const seasonsExists = await getSeasonBySeriesId(xssSeriesId);
+
     if (seriesExists && seasonsExists) {
       await deleteSeasonBySeriesIdAndNumber(xssSeriesId, xssSeasonId);
       return res.json({
@@ -361,7 +360,7 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?', requireAdminAuthentication,
         msg: 'Data has been deleted',
       });
     }
-    return res.status(400).json({ err: 'Cannot delete season' });
+    return res.status(400).json({ err: 'Cannot delete season, seriesId or seasonId not found' });
   });
 
 /**
@@ -383,13 +382,12 @@ routerTV.post('/tv/:seriesId?/season/:seasonId?/episode/', requireAdminAuthentic
     }
     const { seriesId, seasonId } = req.params;
     const xssSeriesId = xss(seriesId);
-    const seriesExists = getSeriesByID(xssSeriesId);
+    const seriesExists = await getSeriesByID(xssSeriesId);
     const xssSeasonId = xss(seasonId);
-    const seasonsExists = getSeasonBySeriesId(xssSeriesId);
+    const seasonsExists = await getSeasonBySeriesId(xssSeriesId);
     const data = req.body;
-    const xssData = xss(data);
     if (seriesExists && seasonsExists) {
-      await makeEpisode(xssData, xssSeriesId, xssSeasonId);
+      await makeEpisode(data, xssSeriesId, xssSeasonId);
       return res.json({
         data,
         msg: 'Episode has been added',
@@ -401,8 +399,8 @@ routerTV.post('/tv/:seriesId?/season/:seasonId?/episode/', requireAdminAuthentic
 /**
  * /genres
  */
-routerTV.get('/genres', (_req, res) => {
-  const data = getGenres();
+routerTV.get('/genres', async (_req, res) => {
+  const data = await getGenres();
   res.json(data);
 });
 
@@ -470,10 +468,12 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', requireA
     const { seriesId, seasonId, episodeId } = req.params;
     const xssSeriesId = xss(seriesId);
     const xssSeasonId = xss(seasonId);
-    const seriesExists = getSeriesByID(xssSeriesId);
-    const seasonsExists = getSeasonBySeriesId(xssSeriesId);
+    const seriesExists = await getSeriesByID(xssSeriesId);
+    const seasonsExists = await getSeasonBySeriesId(xssSeriesId);
     const xssEpisodeId = xss(episodeId);
-    if (seriesExists && seasonsExists) {
+    const episodeExists = await getEpisodeBySeasonIdAndNumber(xssSeasonId, xssEpisodeId);
+    console.info('Data has been deleted');
+    if (seriesExists && seasonsExists && episodeExists) {
       await deleteEpisodeByID(xssSeriesId, xssSeasonId, xssEpisodeId);
       return res.json({
         seriesId,
@@ -481,5 +481,5 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', requireA
         episodeId,
       });
     }
-    return res.status(400).json({ err: 'Cannot delete season' });
+    return res.status(400).json({ err: 'Cannot delete season, seriesId, seasonId or episodeId doesnt exist' });
   });
