@@ -17,6 +17,10 @@ import { createTokenForUser, requireAuthentication, requireAdminAuthentication }
 
 export const routerUsers = express.Router();
 
+const {
+  JWT_TOKENLIFETIME: tokenLifetime = 3600,
+} = process.env;
+
 /**
  * /users/
  * skilar síðu af notendum, aðeins ef notandi sem framkvæmir er stjórnandi
@@ -107,7 +111,7 @@ routerUsers.post('/users/login',
           admin: user.admin,
         },
         token,
-        expiresIn: 'not implemented',
+        expiresIn: tokenLifetime,
       });
     }
 

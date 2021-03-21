@@ -95,7 +95,6 @@ export async function initSeries(data) {
       homepage)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   `;
-
   try {
     await query(q, [
       data.name,
