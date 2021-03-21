@@ -2,7 +2,13 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import { promises as fs } from 'fs';
-import { insertSeries, insertSeasons, insertEpisodes, insertGenres } from './csvReader/reader.js';
+// eslint-disable-next-line import/named
+import {
+  insertSeries,
+  insertSeasons,
+  insertEpisodes,
+  insertGenres,
+} from './csvReader/reader.js';
 
 async function readFileAsync(sql) {
   try {
