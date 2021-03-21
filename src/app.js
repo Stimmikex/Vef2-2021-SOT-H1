@@ -31,12 +31,12 @@ const sessionSecret = 'leyndarmál';
 app.use(express.json());
 
 // Passport mun verða notað með session
-app.use(session({
-  secret: sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-  maxAge: 20 * 1000, // 20 sek
-}));
+// app.use(session({
+//   secret: sessionSecret,
+//   resave: false,
+//   saveUninitialized: false,
+//   maxAge: 20 * 1000, // 20 sek
+// }));
 
 app.get('/', async (req, res) => {
   res.json({
