@@ -2,7 +2,7 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import { promises as fs } from 'fs';
-import { insertSeries, insertSeasons, insertEpisodes} from './csvReader/reader.js';
+import { insertSeries, insertSeasons, insertEpisodes, insertGenres} from './csvReader/reader.js';
 
 async function readFileAsync(sql) {
   try {
@@ -62,6 +62,8 @@ async function main() {
   }
 
   try {
+    await insertGenres();
+    console.info('added genres');
     await insertSeries();
     console.info('added series');
     await insertSeasons();

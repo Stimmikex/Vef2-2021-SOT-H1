@@ -106,7 +106,7 @@ routerUserXtv.post('/tv/:seriesId?/state', requireAuthentication,
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
   body('status')
-    .isNumeric({ min: 0, max: 256 })
+    .isLength({ min: 0, max: 256 })
     .withMessage('status need to be 0 to 256'),
   async (req, res) => {
     const errors = validationResult(req);

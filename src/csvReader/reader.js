@@ -5,7 +5,22 @@ import { query } from '../dataOut/utils.js';
 
 import {getSeasonBySeriesIdAndNumber} from '../dataOut/tvshows.js';
 
-export async function makeSeries(data) {
+export async function initGenres(data) {
+  const q = `INSERT INTO category (name)
+             VALUES ($1)
+             ON CONFLICT (name) DO NOTHING`;
+  const genres = data.split(',');
+  var i;
+  for(i = 0; i < genres.length; i++) {
+    try {
+      await query(q, [genres[i]]);
+    } catch (e) {
+      console.info('Error occured :>> ', e);
+    }
+  }
+}
+
+export async function initSeries(data) {
   const q = `
     INSERT INTO
     series (
@@ -20,6 +35,7 @@ export async function makeSeries(data) {
       homepage)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   `;
+
   try {
     await query(q, [
       data.name,
@@ -35,9 +51,45 @@ export async function makeSeries(data) {
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
+
+    const q2 = `SELECT id from series WHERE name = $1`
+
+    let seriesId;
+    try {
+      seriesId = await query(q2, [data.name]);
+    } catch (e) {
+      console.info('Error occured :>> ', e);
+    }
+
+    seriesId = seriesId.rows[0].id;
+
+    const genres = (data.genres).split(',');
+
+    genres.forEach(async (genre) => {
+      const q3 = `SELECT id from category WHERE name = $1`
+      let categoryId;
+      try {
+        categoryId = await query(q3, [genre]);
+      } catch (e) {
+        console.info('Error occured :>> ', e);
+      }
+
+      categoryId = categoryId.rows[0].id;
+
+      const q4 = `
+        INSERT INTO
+        seriescategory (category_id, series_id)
+        VALUES ($1, $2)
+        `;
+      try {
+        await query(q4, [categoryId, seriesId]);
+      } catch (e) {
+        console.info('Error occured :>> ', e);
+      }
+    });
 }
 
-export async function makeSeason(data) {
+export async function initSeason(data) {
   const q = `
     INSERT INTO
       seasons (name, number, airdate, overview, poster, series_id)
@@ -61,7 +113,7 @@ export async function makeSeason(data) {
   }
 }
 
-export async function makeEpisode(data) {
+export async function initEpisode(data) {
   const q = `
     INSERT INTO
       episodes (name, number, airdate, overview, season_id)
@@ -79,12 +131,22 @@ export async function makeEpisode(data) {
   }
 }
 
+export async function insertGenres() {
+  fs.createReadStream('./data/series.csv')
+    .pipe(csv())
+    .on('data', async (row) => {
+      await initGenres(row.genres);
+      console.log(row.genres);
+    })
+    .on('end', () => {
+      console.log('genres inserted');
+    });
+}
 export async function insertSeries() {
   fs.createReadStream('./data/series.csv')
     .pipe(csv())
     .on('data', async (row) => {
-      // console.log(row);
-      await makeSeries(row);
+      await initSeries(row);
     })
     .on('end', () => {
       console.log('series.csv successfully processed');
@@ -96,7 +158,7 @@ export async function insertSeasons() {
     .pipe(csv())
     .on('data', async (row) => {
       // console.log(row);
-      await makeSeason(row);
+      await initSeason(row);
     })
     .on('end', () => {
       console.log('seasons.cvs successfully processed');
@@ -108,7 +170,7 @@ export async function insertEpisodes() {
     .pipe(csv())
     .on('data', async (row) => {
       // console.log(row);
-      await makeEpisode(row);
+      await initEpisode(row);
     })
     .on('end', () => {
       console.log('episodes.cvs successfully processed');

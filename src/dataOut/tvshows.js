@@ -78,6 +78,17 @@ export async function getSeriesByID(id) {
   return result.rows[0];
 }
 
+export async function getSeriesByName(name) {
+  const q = `SELECT * FROM series WHERE name = $1`;
+  let result = '';
+  try {
+    result = await query(q, [name]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+  return result.rows[0];
+}
+
 /**
  *
  * @param {INTEGER} id
@@ -98,6 +109,7 @@ export async function updateSeriesByID(data, id) {
     WHERE
         id = $10  
   `;
+
   const currentData = await getSeriesByID(id);
 
   let newData = {
@@ -320,7 +332,11 @@ export async function getGenres() {
 }
 
 export async function getGenresBySeriesId(id) {
-  const q = 'SELECT name, category_id FROM seriesCategory INNER JOIN category ON (category_id = category.id) WHERE series_id = $1';
+  const q = `SELECT category.name 
+             FROM seriesCategory 
+             INNER JOIN category ON (category_id = category.id) 
+             INNER JOIN series ON (series_id = series.id) 
+             WHERE series_id = $1`;
   let result = '';
   try {
     result = await query(q, [id]);
@@ -349,6 +365,15 @@ export async function makeGenre(data) {
   `;
   try {
     await query(q, [data]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+}
+
+export async function getGenreByName(name) {
+  const q = `SELECT * FROM category WHERE name = $1`;
+  try {
+    await query(q, [name]);
   } catch (e) {
     console.info('Error occured :>> ', e);
   }

@@ -78,6 +78,18 @@ export async function deleteState(series, user) {
   return true;
 }
 
+export async function getRatingCountBySeriesId(id) {
+    const q = `SELECT COUNT(*) as count from seriesuser 
+               WHERE series_id = $1 AND rating IS NOT NULL`;
+    let result = '';
+    try {
+        result = await query(q, [id]);
+    } catch (e) {
+        console.info('Error occured :>> ', e);
+    }
+    return result.rows[0].count;
+}
+
 export async function checkRatingBySeriesId(id) {
   const q = 'SELECT * FROM users WHERE series = $1';
   let result = '';
@@ -104,7 +116,7 @@ export async function getRatingBySeriesIdAndUserId(id, userId) {
 }
 
 export async function getAVGRatingBySeriesId(id) {
-  const q = 'SELECT AVG(rating)::numeric(10,2) FROM seriesUser WHERE series_id = $1';
+  const q = 'SELECT AVG(rating)::numeric(10,1) FROM seriesUser WHERE series_id = $1';
   let result = '';
   try {
     result = await query(q, [id]);

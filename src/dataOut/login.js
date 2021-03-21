@@ -42,6 +42,17 @@ export function createTokenForUser(id) {
   return token;
 }
 
+export function optionalAuthentication(req, res, next) {
+  return passport.authenticate(
+    'jwt',
+    { session: false },
+    (err, user, info) => {
+      req.user = user;
+      return next();
+    },
+  )(req, res, next);
+}
+
 export function requireAuthentication(req, res, next) {
   return passport.authenticate(
     'jwt',

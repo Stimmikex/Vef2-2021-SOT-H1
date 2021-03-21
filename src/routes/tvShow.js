@@ -24,15 +24,18 @@ import {
   deleteGenres,
   deleteEpisodeByID,
   getGenresBySeriesId,
+  getSeriesByName,
 } from '../dataOut/tvshows.js';
 
 import {
   checkRatingBySeriesId,
   getAVGRatingBySeriesId,
+  getRatingCountBySeriesId,
+  getStateAndRating,
 // eslint-disable-next-line import/named
 } from '../dataOut/usersXtv.js';
 
-import { requireAdminAuthentication } from '../dataOut/login.js';
+import { requireAdminAuthentication, optionalAuthentication } from '../dataOut/login.js';
 
 // eslint-disable-next-line import/named
 import { imgUpload } from '../dataOut/utils.js';
@@ -55,9 +58,7 @@ routerTV.get('/tv', async (req, res) => {
   const links = {
     self: {
       href: `http://localhost:4000/tv?offset=${offset}&limit=10`,
-    },
-    next: null,
-    prev: null,
+    }
   };
   if (offset + 10 < count.count) {
     links.next = {
@@ -80,17 +81,13 @@ routerTV.get('/tv', async (req, res) => {
 
 // eslint-disable-next-line no-unused-vars
 routerTV.post('/tv', requireAdminAuthentication,
-  param('seriesId')
-    .isInt()
-    .custom((value) => value > 0)
-    .withMessage('must be an integer larger than 0'),
   body('name')
     .isLength({ min: 1, max: 128 })
     .withMessage('name is required, max 128 characters'),
-  body('airDate')
+  body('airdate')
     .isDate()
-    .withMessage('airDate must be a date'),
-  body('inProduction')
+    .withMessage('airdate must be a date'),
+  body('works')
     .isBoolean()
     .withMessage('inProduction must be a boolean'),
   body('image'),
@@ -99,7 +96,8 @@ routerTV.post('/tv', requireAdminAuthentication,
     .withMessage('description must be a string'),
   body('language')
     .isString()
-    .isLength(2),
+    .isLength( { min: 2, max: 2})
+    .withMessage('language must be string with length 2'),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -109,16 +107,14 @@ routerTV.post('/tv', requireAdminAuthentication,
     const cloudinaryURL = await imgUpload('./data/img/provo.png');
     dataman.image = cloudinaryURL;
     await makeSeries(dataman);
-    return res.json({
-      data: dataman,
-      msg: 'Has been added',
-    });
+    let info = await getSeriesByName(dataman.name);
+    return res.json(info);
   });
 
 /**
  * /tv/:data?
  */
-routerTV.get('/tv/:seriesId?',
+routerTV.get('/tv/:seriesId?', optionalAuthentication,
   param('seriesId')
     .isInt()
     .custom((value) => value > 0)
@@ -133,19 +129,34 @@ routerTV.get('/tv/:seriesId?',
     const data = await getSeriesByID(xssSeriesId);
     const genres = await getGenresBySeriesId(xssSeriesId);
     const seasons = await getSeasonBySeriesId(xssSeriesId);
-    const ratings = '';
+    const ratingAVG = await getAVGRatingBySeriesId(xssSeriesId);
+    const ratings = await getRatingCountBySeriesId(xssSeriesId);
+
+    let info = {};
+    if(req.user) {
+      const userInfo = await getStateAndRating(xssSeriesId, req.user.id);
+      info.serie = data;
+      info.averagerating = ratingAVG.avg;
+      info.ratings = ratings;
+      info.userRating = userInfo.rating;
+      info.userStatus = userInfo.status;
+      info.genres = genres;
+      info.seasons = seasons;
+    } else {
+      info.series = data;
+      info.averagerating = ratingAVG.avg;
+      info.ratings = ratings;
+      info.genres = genres;
+      info.seasons = seasons;
+    }
     // need to add check if user is the right user.
     if (checkRatingBySeriesId) {
       // ratings = await getRatingBySeriesIdAndUserId(seriesId, req.user.id);
     }
-    const ratingAVG = getAVGRatingBySeriesId(xssSeriesId);
-    return res.json({
-      series: data,
-      genres,
-      seasons,
-      ratings,
-      ratingAVG,
-    });
+
+
+
+    return res.json(info);
   });
 
 routerTV.patch('/tv/:seriesId?', requireAdminAuthentication,
@@ -156,19 +167,20 @@ routerTV.patch('/tv/:seriesId?', requireAdminAuthentication,
   body('name')
     .isLength({ min: 1, max: 128 })
     .withMessage('name is required, max 128 characters'),
-  body('airDate')
+  body('airdate')
     .isDate()
-    .withMessage('airDate must be a date'),
-  body('inProduction')
+    .withMessage('airdate must be a date'),
+  body('works')
     .isBoolean()
-    .withMessage('inProduction must be a boolean'),
+    .withMessage('works must be a boolean'),
   body('image'),
   body('description')
     .isString()
     .withMessage('description must be a string'),
   body('language')
     .isString()
-    .isLength(2),
+    .isLength({ min: 2, max: 2 })
+    .withMessage('language must be a string of length 2'),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -198,7 +210,7 @@ routerTV.delete('/tv/:seriesId?', requireAdminAuthentication,
     const { seriesId } = req.params;
     const xssSeriesId = xss(seriesId);
     await deleteSeriesByID(xssSeriesId);
-    console.info('Data has been deleted');
+    console.info('Series has been deleted');
     return res.json({
       seriesId: xssSeriesId,
       msg: 'Data has been deleted',
@@ -250,13 +262,18 @@ routerTV.post('/tv/:seriesId?/season', requireAdminAuthentication,
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
   body('name')
-    .isLength({ min: 1 })
-    .isLength({ max: 128 })
+    .isLength({ min: 1, max: 128 })
     .withMessage('name is required, max 255 characters'),
   body('number')
     .isInt()
-    .custom((value) => Number.parseInt(value, 10) >= 0),
-  body('image'),
+    .withMessage('season number required')
+    .custom((value) => Number.parseInt(value, 10) >= 1)
+    .withMessage('season number must be greater than 0'),
+  body('overview')
+    .isString()
+    .withMessage('overview required')
+    .isLength( { min: 1 })
+    .withMessage('overview length must be greater than 0'),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
