@@ -347,9 +347,8 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?', requireAdminAuthentication,
     const seriesExists = getSeriesByID(xssSeriesId);
     const xssSeasonId = xss(seasonId);
     const seasonsExists = getSeasonBySeriesId(xssSeriesId);
-    await deleteSeasonBySeriesIdAndNumber(xssSeriesId, xssSeasonId);
     if (seriesExists && seasonsExists) {
-      await deleteSeriesByID(xssSeriesId);
+      await deleteSeasonBySeriesIdAndNumber(xssSeriesId, xssSeasonId);
       return res.json({
         seriesId,
         seasonId,
@@ -383,9 +382,8 @@ routerTV.post('/tv/:seriesId?/season/:seasonId?/episode/', requireAdminAuthentic
     const seasonsExists = getSeasonBySeriesId(xssSeriesId);
     const data = req.body;
     const xssData = xss(data);
-    await makeEpisode(xssData, xssSeriesId, xssSeasonId);
     if (seriesExists && seasonsExists) {
-      await deleteSeriesByID(xssSeriesId);
+      await makeEpisode(xssData, xssSeriesId, xssSeasonId);
       return res.json({
         data,
         msg: 'Episode has been added',
@@ -469,10 +467,8 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', requireA
     const seriesExists = getSeriesByID(xssSeriesId);
     const seasonsExists = getSeasonBySeriesId(xssSeriesId);
     const xssEpisodeId = xss(episodeId);
-    await deleteEpisodeByID(xssSeriesId, xssSeasonId, xssEpisodeId);
-    console.info('Data has been deleted');
     if (seriesExists && seasonsExists) {
-      await deleteSeriesByID(xssSeriesId);
+      await deleteEpisodeByID(xssSeriesId, xssSeasonId, xssEpisodeId);
       return res.json({
         seriesId,
         seasonId,
