@@ -154,24 +154,36 @@ routerTV.get('/tv/:seriesId?', optionalAuthentication,
 
 routerTV.patch('/tv/:seriesId?', requireAdminAuthentication,
   param('seriesId')
+    .if()
+    .exists()
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
   body('name')
+    .if()
+    .exists()
     .isLength({ min: 1, max: 128 })
     .withMessage('name is required, max 128 characters'),
   body('airdate')
+    .if()
+    .exists()
     .isDate()
     .withMessage('airdate must be a date'),
   body('works')
+    .if()
+    .exists()
     .isBoolean()
     .withMessage('works must be a boolean'),
   body('image'),
   body('description')
+    .if()
+    .exists()
     .isString()
     .withMessage('description must be a string'),
   body('language')
     .isString()
+    .if()
+    .exists()
     .isLength({ min: 2, max: 2 })
     .withMessage('language must be a string of length 2'),
   async (req, res) => {
@@ -303,7 +315,7 @@ routerTV.get('/tv/:seriesId?/season/:seasonId?',
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
-  param('seriesId')
+  param('seasonId')
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
@@ -333,7 +345,7 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?', requireAdminAuthentication,
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
-  param('seriesId')
+  param('seasonId')
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
@@ -366,7 +378,7 @@ routerTV.post('/tv/:seriesId?/season/:seasonId?/episode/', requireAdminAuthentic
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
-  param('seriesId')
+  param('seasonId')
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
@@ -415,7 +427,7 @@ routerTV.get('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?',
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
-  param('seriesId')
+  param('seasonId')
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
@@ -452,7 +464,7 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', requireA
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
-  param('seriesId')
+  param('seasonId')
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
