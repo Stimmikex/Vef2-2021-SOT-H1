@@ -107,7 +107,8 @@ export async function updateSeriesByID(data, id) {
         network = $8, 
         homepage = $9
     WHERE
-        id = $10  
+        id = $10
+    RETURNING *
   `;
 
   const currentData = await getSeriesByID(id);
@@ -141,9 +142,13 @@ export async function updateSeriesByID(data, id) {
       newData.homepage,
       id,
     ]);
+    if (newData.rowCount === 1) {
+      return newData.rows[0];
+    }
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
+  return null;
 }
 
 /**

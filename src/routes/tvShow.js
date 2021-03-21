@@ -187,14 +187,18 @@ routerTV.patch('/tv/:seriesId?', requireAdminAuthentication,
       return res.status(400).json({ errors: errors.array() });
     }
     const { seriesId } = req.params;
+    const seriesExists = getSeriesByID(seriesId);
     const xssSeriesId = xss(seriesId);
     const data = req.body;
-    await updateSeriesByID(data, xssSeriesId);
-    const info = await getSeriesByID(xssSeriesId);
-    return res.json({
-      info,
-      msg: 'Has been updated',
-    });
+    if (seriesExists) {
+      await updateSeriesByID(data, xssSeriesId);
+      const info = await getSeriesByID(xssSeriesId);
+      return res.json({
+        info,
+        msg: 'Has been updated',
+      });
+    }
+    return res.status(404).json({ err: 'Cannot create series' });
   });
 
 routerTV.delete('/tv/:seriesId?', requireAdminAuthentication,
