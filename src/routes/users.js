@@ -193,12 +193,14 @@ routerUsers.get('/users/:id', requireAdminAuthentication, async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   const data = await getUserByID(req.params.id);
-  if (data) return res.json({
-    id: data.id,
-    name: data.name,
-    email: data.email,
-    admin: data.role,
-  });
+  if (data) {
+    return res.json({
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      admin: data.role,
+    });
+  }
   return res.status(404).json({ msg: 'User not found' });
 });
 

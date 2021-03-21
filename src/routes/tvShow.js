@@ -36,9 +36,6 @@ import {
 
 import { requireAdminAuthentication, optionalAuthentication } from '../dataOut/login.js';
 
-// eslint-disable-next-line import/named
-import { imgUpload } from '../dataOut/utils.js';
-
 export const routerTV = express.Router();
 
 /**
