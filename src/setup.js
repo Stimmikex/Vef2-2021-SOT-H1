@@ -84,8 +84,16 @@ async function main() {
 
   try {
     const q = 'INSERT INTO users(name, email, password, role) VALUES ($1, $2, $3, $4)';
-    const Password = await bcrypt.hash('123', 10);
+    const Password = await bcrypt.hash('1234567890', 10);
     await query(q, ['admin', 'admin@admin.is', Password, true]);
+  } catch (error) {
+    console.error('Villa við að búa til notenda');
+  }
+
+  try {
+    const q = 'INSERT INTO users(name, email, password, role) VALUES ($1, $2, $3, $4)';
+    const Password = await bcrypt.hash('0123456789', 10);
+    await query(q, ['dummy1', 'admin@admin.is', Password, false]);
   } catch (error) {
     console.error('Villa við að búa til notenda');
   }
