@@ -107,7 +107,7 @@ routerTV.post('/tv', requireAdminAuthentication,
     const cloudinaryURL = await imgUpload('./data/img/provo.png');
     dataman.image = cloudinaryURL;
     await makeSeries(dataman);
-    let info = await getSeriesByName(dataman.name);
+    const info = await getSeriesByName(dataman.name);
     return res.json(info);
   });
 
@@ -132,8 +132,8 @@ routerTV.get('/tv/:seriesId?', optionalAuthentication,
     const ratingAVG = await getAVGRatingBySeriesId(xssSeriesId);
     const ratings = await getRatingCountBySeriesId(xssSeriesId);
 
-    let info = {};
-    if(req.user) {
+    const info = {};
+    if (req.user) {
       const userInfo = await getStateAndRating(xssSeriesId, req.user.id);
       info.serie = data;
       info.averagerating = ratingAVG.avg;

@@ -1,7 +1,7 @@
 import { query } from './utils.js';
 
 export async function getSeriesCount() {
-  const q = `SELECT COUNT(*) AS count FROM series`;
+  const q = 'SELECT COUNT(*) AS count FROM series';
   let result = '';
   try {
     result = await query(q);
@@ -16,7 +16,7 @@ export async function getSeriesCount() {
  * @returns shows from database
  */
 export async function getSeries(offset, limit) {
-  const q = `SELECT * FROM series ORDER BY id ASC OFFSET $1 LIMIT $2`;
+  const q = 'SELECT * FROM series ORDER BY id ASC OFFSET $1 LIMIT $2';
   let result = '';
   try {
     result = await query(q, [offset, limit]);
@@ -79,7 +79,7 @@ export async function getSeriesByID(id) {
 }
 
 export async function getSeriesByName(name) {
-  const q = `SELECT * FROM series WHERE name = $1`;
+  const q = 'SELECT * FROM series WHERE name = $1';
   let result = '';
   try {
     result = await query(q, [name]);
@@ -112,7 +112,7 @@ export async function updateSeriesByID(data, id) {
 
   const currentData = await getSeriesByID(id);
 
-  let newData = {
+  const newData = {
     name: data.name || currentData.name,
     airdate: data.airdate || currentData.airdate,
     works: currentData.works,
@@ -122,9 +122,9 @@ export async function updateSeriesByID(data, id) {
     language: data.language || currentData.language,
     network: data.network || currentData.network,
     homepage: data.homepage || currentData.homepage,
-  }
+  };
 
-  if(data.works != null) {
+  if (data.works != null) {
     newData.works = data.works;
   }
 
@@ -139,7 +139,7 @@ export async function updateSeriesByID(data, id) {
       newData.language,
       newData.network,
       newData.homepage,
-      id
+      id,
     ]);
   } catch (e) {
     console.info('Error occured :>> ', e);
@@ -292,7 +292,6 @@ export async function getEpisodeBySeasonIdAndNumber(id, ep) {
   } catch (e) {
     console.info('Error occured :>> ', e);
   }
-  console.log(result.rows);
   return result.rows[0];
 }
 
@@ -312,7 +311,6 @@ export async function deleteEpisodeByID(series, season, episode) {
     DELETE FROM episodes WHERE number = $1 AND season_id = $2;
   `;
   const dataman = await getSeasonBySeriesIdAndNumber(series, season);
-  console.log(dataman);
   try {
     await query(q, [episode, dataman.id]);
   } catch (e) {
@@ -371,7 +369,7 @@ export async function makeGenre(data) {
 }
 
 export async function getGenreByName(name) {
-  const q = `SELECT * FROM category WHERE name = $1`;
+  const q = 'SELECT * FROM category WHERE name = $1';
   try {
     await query(q, [name]);
   } catch (e) {
