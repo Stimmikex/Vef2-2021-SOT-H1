@@ -59,8 +59,7 @@ routerUserXtv.patch('/tv/:seriesId?/rate', requireAuthentication,
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
   body('rating')
-    .if()
-    .exists()
+    .if(body('rating')).exists()
     .isNumeric({ min: 0, max: 5 })
     .withMessage('rating need to be 0 to 5'),
   async (req, res) => {
