@@ -154,36 +154,30 @@ routerTV.get('/tv/:seriesId?', optionalAuthentication,
 
 routerTV.patch('/tv/:seriesId?', requireAdminAuthentication,
   param('seriesId')
-    .if()
-    .exists()
+    .if(param('seriesId')).exists()
     .isInt()
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
   body('name')
-    .if()
-    .exists()
+    .if(body('name')).exists()
     .isLength({ min: 1, max: 128 })
     .withMessage('name is required, max 128 characters'),
   body('airdate')
-    .if()
-    .exists()
+    .if(body('airdate')).exists()
     .isDate()
     .withMessage('airdate must be a date'),
   body('works')
-    .if()
-    .exists()
+    .if(body('works')).exists()
     .isBoolean()
     .withMessage('works must be a boolean'),
   body('image'),
   body('description')
-    .if()
-    .exists()
+    .if(body('description')).exists()
     .isString()
     .withMessage('description must be a string'),
   body('language')
     .isString()
-    .if()
-    .exists()
+    .if(body('language')).exists()
     .isLength({ min: 2, max: 2 })
     .withMessage('language must be a string of length 2'),
   async (req, res) => {

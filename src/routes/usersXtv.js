@@ -138,8 +138,7 @@ routerUserXtv.patch('/tv/:seriesId?/state', requireAuthentication,
     .custom((value) => value > 0)
     .withMessage('must be an integer larger than 0'),
   body('status')
-    .if()
-    .exists()
+    .if(body('status')).exists()
     .isNumeric({ min: 0, max: 256 })
     .withMessage('status need to be 0 to 256'),
   async (req, res) => {
