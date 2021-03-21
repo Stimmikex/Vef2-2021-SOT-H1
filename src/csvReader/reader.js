@@ -1,9 +1,16 @@
 import csv from 'csv-parser';
 import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
 
 import { query, imgUpload } from '../dataOut/utils.js';
 
 import { getSeasonBySeriesIdAndNumber } from '../dataOut/tvshows.js';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 export async function initGenres(data) {
   const q = `INSERT INTO category (name)
@@ -39,7 +46,7 @@ export async function initSeries(data) {
   const path = './data/img/' + data.image;
   console.log(path);
   console.log(data.image);
-  const cloudinaryURL = await imgUpload(path, data.image);
+  //const cloudinaryURL = await imgUpload(path, data.image);
   try {
     await query(q, [
       data.name,
