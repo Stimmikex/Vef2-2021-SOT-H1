@@ -131,46 +131,54 @@ export async function initEpisode(data) {
   }
 }
 
-export async function insertGenres() {
+/**
+ * Inserts Series read from the csv file into the postgres database.
+ * @param printRows
+ */
+export async function insertSeries(printRows=false) {
   fs.createReadStream('./data/series.csv')
     .pipe(csv())
     .on('data', async (row) => {
-      await initGenres(row.genres);
-      console.log(row.genres);
-    })
-    .on('end', () => {
-      console.log('genres inserted');
-    });
-}
-export async function insertSeries() {
-  fs.createReadStream('./data/series.csv')
-    .pipe(csv())
-    .on('data', async (row) => {
-      await initSeries(row);
+      if(printRows) {
+        console.log(row);
+      }
+      await makeSeries(row);
     })
     .on('end', () => {
       console.log('series.csv successfully processed');
     });
 }
 
-export async function insertSeasons() {
+/**
+ * Inserts Seasons read from the csv file into the postgres database.
+ * @param printRows 
+ */
+export async function insertSeasons(printRows=false) {
   fs.createReadStream('./data/seasons.csv')
     .pipe(csv())
     .on('data', async (row) => {
-      // console.log(row);
-      await initSeason(row);
+      if(printRows) {
+        console.log(row);
+      }
+      await makeSeason(row);
     })
     .on('end', () => {
       console.log('seasons.cvs successfully processed');
     });
 }
 
-export async function insertEpisodes() {
+/**
+ * Inserts Episodes read from the csv file into the postgres database.
+ * @param printRows 
+ */
+export async function insertEpisodes(printRows=false) {
   fs.createReadStream('./data/episodes.csv')
     .pipe(csv())
     .on('data', async (row) => {
-      // console.log(row);
-      await initEpisode(row);
+      if(printRows) {
+        console.log(row);
+      }
+      await makeEpisode(row);
     })
     .on('end', () => {
       console.log('episodes.cvs successfully processed');
