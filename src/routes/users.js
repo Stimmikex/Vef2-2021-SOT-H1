@@ -128,7 +128,11 @@ routerUsers.post('/users/login',
 routerUsers.get('/users/me',
   requireAuthentication,
   (req, res) => {
-    res.json(req.user);
+    res.json({
+      username: req.user.name,
+      email: req.user.email,
+      token: req.user.token,
+    });
   });
 
 routerUsers.patch('/users/me', requireAuthentication,
@@ -189,7 +193,12 @@ routerUsers.get('/users/:id', requireAdminAuthentication, async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   const data = await getUserByID(req.params.id);
-  if (data) return res.json(data);
+  if (data) return res.json({
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    admin: data.role,
+  });
   return res.status(404).json({ msg: 'User not found' });
 });
 

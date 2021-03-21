@@ -58,7 +58,6 @@ export function requireAuthentication(req, res, next) {
     'jwt',
     { session: false },
     (err, user, info) => {
-      console.info(user);
       if (err) {
         return next(err);
       }
@@ -79,7 +78,6 @@ export function requireAdminAuthentication(req, res, next) {
     'jwt',
     { session: false },
     (err, user, info) => {
-      console.info(user);
       if (err) {
         return next(err);
       }

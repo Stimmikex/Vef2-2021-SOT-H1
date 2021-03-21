@@ -103,8 +103,6 @@ routerTV.post('/tv', requireAdminAuthentication,
       return res.status(400).json({ errors: errors.array() });
     }
     const dataman = req.body;
-    const cloudinaryURL = await imgUpload('./data/img/provo.png');
-    dataman.image = cloudinaryURL;
     await makeSeries(dataman);
     const info = await getSeriesByName(dataman.name);
     return res.json(info);
