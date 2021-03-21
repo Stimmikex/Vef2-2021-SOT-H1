@@ -93,7 +93,7 @@ async function main() {
   try {
     const q = 'INSERT INTO users(name, email, password, role) VALUES ($1, $2, $3, $4)';
     const Password = await bcrypt.hash('0123456789', 10);
-    await query(q, ['dummy1', 'admin@admin.is', Password, false]);
+    await query(q, ['dummy1', 'dummy@hi.is', Password, false]);
   } catch (error) {
     console.error('Villa við að búa til notenda');
   }
