@@ -99,7 +99,7 @@ async function main() {
   try {
     await insertSeasonImages();
   } catch (error) {
-    console.error('Villa við að hlaða upp season myndum')
+    console.error('Villa við að hlaða upp season myndum');
   }
 }
 
