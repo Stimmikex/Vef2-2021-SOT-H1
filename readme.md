@@ -116,9 +116,12 @@
 Body
 * /tv: 
 * ![image](https://user-images.githubusercontent.com/15611278/111921813-8ff32d80-8a8e-11eb-8a83-41d7f4effc36.png)
-* /tv/:seriesId: ![image](https://user-images.githubusercontent.com/15611278/111921813-8ff32d80-8a8e-11eb-8a83-41d7f4effc36.png)
-* /tv/:seriesId/season: ![image](https://user-images.githubusercontent.com/15611278/111921813-8ff32d80-8a8e-11eb-8a83-41d7f4effc36.png)
-* /tv/:seriesId/season/:seasonId/episode: ![image](https://user-images.githubusercontent.com/15611278/111921813-8ff32d80-8a8e-11eb-8a83-41d7f4effc36.png)
+* /tv/:seriesId: 
+* ![image](https://user-images.githubusercontent.com/15611278/111925171-a35ac480-8a9f-11eb-8567-6488a68d9dc0.png)
+* /tv/:seriesId/season: 
+* ![image](https://user-images.githubusercontent.com/15611278/111925128-760e1680-8a9f-11eb-96c3-8fcc1caba8b8.png)
+* /tv/:seriesId/season/:seasonId/episode: 
+* ![image](https://user-images.githubusercontent.com/15611278/111925074-321b1180-8a9f-11eb-9fd5-7f5756ec43bb.png)
 * /tv/:seriesId/rate: 
 * ![image](https://user-images.githubusercontent.com/15611278/111921968-51aa3e00-8a8f-11eb-8f91-39db4c0302dd.png)
 * /tv/:seriesId/state:
@@ -130,7 +133,7 @@ Body
 
 
 ## Skráðir Notendur:
-  * notandi admin: username: admin, password: 123
+  * notandi admin: username: admin, password: 1234567890
   * notandi venjulegur: username: dummy1, password: 0123456789
 
 ## Hópur:
