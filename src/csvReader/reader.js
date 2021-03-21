@@ -28,8 +28,6 @@ export async function insertSeriesImages() {
     const q2 = 'UPDATE series SET image = $1 WHERE id = $2';
     const path = `./data/img/${row.image}`;
     const url = await imgUpload(path, row.image);
-    console.log(row.image);
-    console.log(row.id);
     try {
       await query(q2, [url, row.id]);
     } catch (e) {
@@ -54,8 +52,6 @@ export async function insertSeasonImages() {
     const q2 = 'UPDATE seasons SET poster = $1 WHERE id = $2';
     const path = `./data/img/${row.poster}`;
     const url = await imgUpload(path, row.poster);
-    console.log(row.poster);
-    console.log(row.id);
     try {
       await query(q2, [url, row.id]);
     } catch (e) {
