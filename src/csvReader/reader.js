@@ -43,10 +43,6 @@ export async function initSeries(data) {
       homepage)
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   `;
-
-  const path = `./data/img/${data.image}`;
-  console.info(path);
-  console.info(data.image);
   // const cloudinaryURL = await imgUpload(path, data.image);
   try {
     await query(q, [
