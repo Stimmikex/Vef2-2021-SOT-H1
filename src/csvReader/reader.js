@@ -3,7 +3,7 @@ import fs from 'fs';
 
 import { query } from '../dataOut/utils.js';
 
-import {getSeasonBySeriesIdAndNumber} from '../dataOut/tvshows.js';
+import { getSeasonBySeriesIdAndNumber } from '../dataOut/tvshows.js';
 
 export async function initGenres(data) {
   const q = `INSERT INTO category (name)
