@@ -28,7 +28,6 @@ import {
 } from '../dataOut/tvshows.js';
 
 import {
-  checkRatingBySeriesId,
   getAVGRatingBySeriesId,
   getRatingCountBySeriesId,
   getStateAndRating,
@@ -58,7 +57,7 @@ routerTV.get('/tv', async (req, res) => {
   const links = {
     self: {
       href: `http://localhost:4000/tv?offset=${offset}&limit=10`,
-    }
+    },
   };
   if (offset + 10 < count.count) {
     links.next = {
@@ -96,7 +95,7 @@ routerTV.post('/tv', requireAdminAuthentication,
     .withMessage('description must be a string'),
   body('language')
     .isString()
-    .isLength( { min: 2, max: 2})
+    .isLength({ min: 2, max: 2 })
     .withMessage('language must be string with length 2'),
   async (req, res) => {
     const errors = validationResult(req);
@@ -149,12 +148,6 @@ routerTV.get('/tv/:seriesId?', optionalAuthentication,
       info.genres = genres;
       info.seasons = seasons;
     }
-    // need to add check if user is the right user.
-    if (checkRatingBySeriesId) {
-      // ratings = await getRatingBySeriesIdAndUserId(seriesId, req.user.id);
-    }
-
-
 
     return res.json(info);
   });
@@ -187,8 +180,8 @@ routerTV.patch('/tv/:seriesId?', requireAdminAuthentication,
       return res.status(400).json({ errors: errors.array() });
     }
     const { seriesId } = req.params;
-    const seriesExists = getSeriesByID(seriesId);
     const xssSeriesId = xss(seriesId);
+    const seriesExists = getSeriesByID(xssSeriesId);
     const data = req.body;
     if (seriesExists) {
       await updateSeriesByID(data, xssSeriesId);
@@ -198,7 +191,7 @@ routerTV.patch('/tv/:seriesId?', requireAdminAuthentication,
         msg: 'Has been updated',
       });
     }
-    return res.status(404).json({ err: 'Cannot create series' });
+    return res.status(400).json({ err: 'Cannot create series' });
   });
 
 routerTV.delete('/tv/:seriesId?', requireAdminAuthentication,
@@ -213,12 +206,15 @@ routerTV.delete('/tv/:seriesId?', requireAdminAuthentication,
     }
     const { seriesId } = req.params;
     const xssSeriesId = xss(seriesId);
-    await deleteSeriesByID(xssSeriesId);
-    console.info('Series has been deleted');
-    return res.json({
-      seriesId: xssSeriesId,
-      msg: 'Data has been deleted',
-    });
+    const seriesExists = getSeriesByID(xssSeriesId);
+    if (seriesExists) {
+      await deleteSeriesByID(xssSeriesId);
+      return res.json({
+        seriesId: xssSeriesId,
+        msg: 'Data has been deleted',
+      });
+    }
+    return res.status(400).json({ err: 'Cannot delete series' });
   });
 
 /**
@@ -276,7 +272,7 @@ routerTV.post('/tv/:seriesId?/season', requireAdminAuthentication,
   body('overview')
     .isString()
     .withMessage('overview required')
-    .isLength( { min: 1 })
+    .isLength({ min: 1 })
     .withMessage('overview length must be greater than 0'),
   async (req, res) => {
     const errors = validationResult(req);
@@ -287,11 +283,16 @@ routerTV.post('/tv/:seriesId?/season', requireAdminAuthentication,
     const xssSeriesId = xss(seriesId);
     const data = req.body;
     const xssData = xss(data);
+    const seriesExists = getSeriesByID(xssSeriesId);
     await makeSeason(xssData, xssSeriesId);
-    return res.json({
-      data,
-      msg: 'season has been added',
-    });
+    if (seriesExists) {
+      await deleteSeriesByID(xssSeriesId);
+      return res.json({
+        data,
+        msg: 'season has been added',
+      });
+    }
+    return res.status(400).json({ err: 'Cannot create season' });
   });
 
 /**
@@ -343,13 +344,19 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?', requireAdminAuthentication,
     }
     const { seriesId, seasonId } = req.params;
     const xssSeriesId = xss(seriesId);
+    const seriesExists = getSeriesByID(xssSeriesId);
     const xssSeasonId = xss(seasonId);
+    const seasonsExists = getSeasonBySeriesId(xssSeriesId);
     await deleteSeasonBySeriesIdAndNumber(xssSeriesId, xssSeasonId);
-    return res.json({
-      seriesId,
-      seasonId,
-      msg: 'Data has been deleted',
-    });
+    if (seriesExists && seasonsExists) {
+      await deleteSeriesByID(xssSeriesId);
+      return res.json({
+        seriesId,
+        seasonId,
+        msg: 'Data has been deleted',
+      });
+    }
+    return res.status(400).json({ err: 'Cannot delete season' });
   });
 
 /**
@@ -371,14 +378,20 @@ routerTV.post('/tv/:seriesId?/season/:seasonId?/episode/', requireAdminAuthentic
     }
     const { seriesId, seasonId } = req.params;
     const xssSeriesId = xss(seriesId);
+    const seriesExists = getSeriesByID(xssSeriesId);
     const xssSeasonId = xss(seasonId);
+    const seasonsExists = getSeasonBySeriesId(xssSeriesId);
     const data = req.body;
     const xssData = xss(data);
     await makeEpisode(xssData, xssSeriesId, xssSeasonId);
-    return res.json({
-      data,
-      msg: 'Episode has been added',
-    });
+    if (seriesExists && seasonsExists) {
+      await deleteSeriesByID(xssSeriesId);
+      return res.json({
+        data,
+        msg: 'Episode has been added',
+      });
+    }
+    return res.status(400).json({ err: 'Cannot delete season' });
   });
 
 /**
@@ -453,12 +466,18 @@ routerTV.delete('/tv/:seriesId?/season/:seasonId?/episode/:episodeId?', requireA
     const { seriesId, seasonId, episodeId } = req.params;
     const xssSeriesId = xss(seriesId);
     const xssSeasonId = xss(seasonId);
+    const seriesExists = getSeriesByID(xssSeriesId);
+    const seasonsExists = getSeasonBySeriesId(xssSeriesId);
     const xssEpisodeId = xss(episodeId);
     await deleteEpisodeByID(xssSeriesId, xssSeasonId, xssEpisodeId);
     console.info('Data has been deleted');
-    res.json({
-      seriesId,
-      seasonId,
-      episodeId,
-    });
+    if (seriesExists && seasonsExists) {
+      await deleteSeriesByID(xssSeriesId);
+      return res.json({
+        seriesId,
+        seasonId,
+        episodeId,
+      });
+    }
+    return res.status(400).json({ err: 'Cannot delete season' });
   });
