@@ -40,13 +40,15 @@ export async function query(q, values = []) {
   return result;
 }
 
-export async function imgUpload(image) {
-  const result = await cloudinary.uploader.upload(image, { public_id: 'h1/test', overwrite: true },
+export async function imgUpload(image, name) {
+  let path = `h1/${name}`;
+  path = path.slice(0, -4);
+  const result = await cloudinary.uploader.upload(image, { public_id: path, overwrite: true },
     (error) => {
       if (error) { console.error(error); } else {
         console.info('Image uploaded');
       }
     });
 
-  //return result.secure_url;
+  return result.secure_url;
 }

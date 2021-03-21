@@ -2,7 +2,7 @@ import csv from 'csv-parser';
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 
-import { query } from '../dataOut/utils.js';
+import { query, imgUpload } from '../dataOut/utils.js';
 
 import { getSeasonBySeriesIdAndNumber } from '../dataOut/tvshows.js';
 
@@ -11,6 +11,58 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+export async function insertSeriesImages() {
+  const q = 'SELECT id, image FROM series';
+
+  let result;
+  try {
+    result = await query(q);
+  } catch (e) {
+    console.info('Error Occured :>> ', e);
+  }
+
+  result = result.rows;
+
+  result.forEach(async (row) => {
+    const q2 = 'UPDATE series SET image = $1 WHERE id = $2';
+    const path = `./data/img/${row.image}`;
+    const url = await imgUpload(path, row.image);
+    console.log(row.image);
+    console.log(row.id);
+    try {
+      await query(q2, [url, row.id]);
+    } catch (e) {
+      console.info('Error occured :>> ', e);
+    }
+  });
+}
+
+export async function insertSeasonImages() {
+  const q = 'SELECT id, poster FROM seasons';
+
+  let result;
+  try {
+    result = await query(q);
+  } catch (e) {
+    console.info('Error Occured :>> ', e);
+  }
+
+  result = result.rows;
+
+  result.forEach(async (row) => {
+    const q2 = 'UPDATE seasons SET poster = $1 WHERE id = $2';
+    const path = `./data/img/${row.poster}`;
+    const url = await imgUpload(path, row.poster);
+    console.log(row.poster);
+    console.log(row.id);
+    try {
+      await query(q2, [url, row.id]);
+    } catch (e) {
+      console.info('Error occured :>> ', e);
+    }
+  });
+}
 
 export async function initGenres(data) {
   const q = `INSERT INTO category (name)
@@ -44,10 +96,6 @@ export async function initSeries(data) {
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   `;
 
-  const path = `./data/img/${data.image}`;
-  console.info(path);
-  console.info(data.image);
-  // const cloudinaryURL = await imgUpload(path, data.image);
   try {
     await query(q, [
       data.name,

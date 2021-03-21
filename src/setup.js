@@ -8,6 +8,8 @@ import {
   insertSeasons,
   insertEpisodes,
   insertGenres,
+  insertSeriesImages,
+  insertSeasonImages,
 } from './csvReader/reader.js';
 
 async function readFileAsync(sql) {
@@ -86,6 +88,18 @@ async function main() {
     await query(q, ['admin', 'admin@admin.is', Password, true]);
   } catch (error) {
     console.error('Villa við að búa til notenda');
+  }
+
+  try {
+    await insertSeriesImages();
+  } catch (error) {
+    console.error('Villa við að hlaða upp series myndum');
+  }
+
+  try {
+    await insertSeasonImages();
+  } catch (error) {
+    console.error('Villa við að hlaða upp season myndum')
   }
 }
 
