@@ -36,7 +36,7 @@ async function strat(data, next) {
 passport.use(new Strategy(jwtOptions, strat));
 
 export function createTokenForUser(id) {
-  const payload = { id: id };
+  const payload = { id };
   const tokenOptions = { expiresIn: tokenLifetime };
   const token = jwt.sign(payload, jwtSecret, tokenOptions);
   return token;
@@ -46,7 +46,7 @@ export function optionalAuthentication(req, res, next) {
   return passport.authenticate(
     'jwt',
     { session: false },
-    (err, user, info) => {
+    (err, user) => {
       req.user = user;
       return next();
     },
@@ -88,7 +88,6 @@ export function requireAdminAuthentication(req, res, next) {
         const error = info.name === 'TokenExpiredError' ? 'expired token' : 'invalid token';
         return res.status(401).json({ error });
       }
-      
       if (!user.role) {
         return res.status(401).json({ error: 'user is not admin' });
       }

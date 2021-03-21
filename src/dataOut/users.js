@@ -1,7 +1,5 @@
 import bcrypt from 'bcrypt';
 import { query } from './utils.js';
-import xss from 'xss';
-import { body, validationResult } from 'express-validator';
 
 export async function getUsers() {
   const q = 'SELECT name, email, role FROM users';
@@ -45,12 +43,11 @@ export async function updateUser(data, currentPass) {
   `;
 
   let newPassword = data.password;
-  if (newPassword != currentPass) {
+  if (newPassword !== currentPass) {
     newPassword = await bcrypt.hash(newPassword, 10);
   }
 
   let result = '';
-  
   try {
     result = await query(q, [data.id, newPassword, data.email]);
   } catch (e) {

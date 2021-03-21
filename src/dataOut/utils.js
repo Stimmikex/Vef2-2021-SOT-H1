@@ -1,14 +1,13 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
-import e from 'express';
 
 dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const {
@@ -41,20 +40,13 @@ export async function query(q, values = []) {
   return result;
 }
 
-export async function imgUpload(image, name) {
-  let id = name.split('.');
-  id = 'h1/' + id[0];
-  console.log(name);
-  console.log(id);
-  let result = await cloudinary.uploader.upload(image, {public_id: id, overwrite: true},
-  function(error) 
-  {
-    if (error) {console.error(error);}
-    else {
-      console.info('Image uploaded');
-    }
-  });
-  return true;
+export async function imgUpload(image) {
+  const result = await cloudinary.uploader.upload(image, { public_id: 'h1/test', overwrite: true },
+    (error) => {
+      if (error) { console.error(error); } else {
+        console.info('Image uploaded');
+      }
+    });
 
   //return result.secure_url;
 }

@@ -9,7 +9,7 @@ import { getSeasonBySeriesIdAndNumber } from '../dataOut/tvshows.js';
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export async function initGenres(data) {
@@ -17,9 +17,10 @@ export async function initGenres(data) {
              VALUES ($1)
              ON CONFLICT (name) DO NOTHING`;
   const genres = data.split(',');
-  var i;
-  for(i = 0; i < genres.length; i++) {
+  let i;
+  for (i = 0; i < genres.length; i += 1) {
     try {
+      // eslint-disable-next-line no-await-in-loop
       await query(q, [genres[i]]);
     } catch (e) {
       console.info('Error occured :>> ', e);
@@ -43,10 +44,10 @@ export async function initSeries(data) {
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
   `;
 
-  const path = './data/img/' + data.image;
-  console.log(path);
-  console.log(data.image);
-  //const cloudinaryURL = await imgUpload(path, data.image);
+  const path = `./data/img/${data.image}`;
+  console.info(path);
+  console.info(data.image);
+  // const cloudinaryURL = await imgUpload(path, data.image);
   try {
     await query(q, [
       data.name,
@@ -63,41 +64,41 @@ export async function initSeries(data) {
     console.info('Error occured :>> ', e);
   }
 
-    const q2 = `SELECT id from series WHERE name = $1`
+  const q2 = 'SELECT id from series WHERE name = $1';
 
-    let seriesId;
+  let seriesId;
+  try {
+    seriesId = await query(q2, [data.name]);
+  } catch (e) {
+    console.info('Error occured :>> ', e);
+  }
+
+  seriesId = seriesId.rows[0].id;
+
+  const genres = (data.genres).split(',');
+
+  genres.forEach(async (genre) => {
+    const q3 = 'SELECT id from category WHERE name = $1';
+    let categoryId;
     try {
-      seriesId = await query(q2, [data.name]);
+      categoryId = await query(q3, [genre]);
     } catch (e) {
       console.info('Error occured :>> ', e);
     }
 
-    seriesId = seriesId.rows[0].id;
+    categoryId = categoryId.rows[0].id;
 
-    const genres = (data.genres).split(',');
-
-    genres.forEach(async (genre) => {
-      const q3 = `SELECT id from category WHERE name = $1`
-      let categoryId;
-      try {
-        categoryId = await query(q3, [genre]);
-      } catch (e) {
-        console.info('Error occured :>> ', e);
-      }
-
-      categoryId = categoryId.rows[0].id;
-
-      const q4 = `
-        INSERT INTO
-        seriescategory (category_id, series_id)
-        VALUES ($1, $2)
-        `;
-      try {
-        await query(q4, [categoryId, seriesId]);
-      } catch (e) {
-        console.info('Error occured :>> ', e);
-      }
-    });
+    const q4 = `
+      INSERT INTO
+      seriescategory (category_id, series_id)
+      VALUES ($1, $2)
+      `;
+    try {
+      await query(q4, [categoryId, seriesId]);
+    } catch (e) {
+      console.info('Error occured :>> ', e);
+    }
+  });
 }
 
 export async function initSeason(data) {
@@ -147,10 +148,10 @@ export async function insertGenres() {
     .pipe(csv())
     .on('data', async (row) => {
       await initGenres(row.genres);
-      console.log(row.genres);
+      console.info(row.genres);
     })
     .on('end', () => {
-      console.log('genres inserted');
+      console.info('genres inserted');
     });
 }
 export async function insertSeries() {
@@ -160,7 +161,7 @@ export async function insertSeries() {
       await initSeries(row);
     })
     .on('end', () => {
-      console.log('series.csv successfully processed');
+      console.info('series.csv successfully processed');
     });
 }
 
@@ -172,7 +173,7 @@ export async function insertSeasons() {
       await initSeason(row);
     })
     .on('end', () => {
-      console.log('seasons.cvs successfully processed');
+      console.info('seasons.cvs successfully processed');
     });
 }
 
@@ -184,6 +185,6 @@ export async function insertEpisodes() {
       await initEpisode(row);
     })
     .on('end', () => {
-      console.log('episodes.cvs successfully processed');
+      console.info('episodes.cvs successfully processed');
     });
 }
